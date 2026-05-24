@@ -1,0 +1,418 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Dashboard – DBLearn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Noto Sans Thai", sans-serif; background: #f0f4fb; color: #1f2b3a; min-height: 100vh; display: flex; }
+
+    /* ── Sidebar ── */
+    .td-sidebar {
+      width: 220px; min-height: 100vh; flex-shrink: 0;
+      background: linear-gradient(180deg, #16398d 0%, #1d4a9f 100%);
+      display: flex; flex-direction: column; padding: 0 0 24px;
+    }
+    .td-sidebar__brand {
+      display: flex; align-items: center; gap: 12px; padding: 22px 20px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+    .td-sidebar__brand-logo {
+      width: 42px; height: 42px; border-radius: 10px;
+      background: rgba(255,255,255,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: #fff;
+    }
+    .td-sidebar__brand-text { font-size: 15px; font-weight: 700; color: #fff; line-height: 1.3; }
+    .td-sidebar__brand-text span { font-size: 11px; font-weight: 400; opacity: .7; display: block; }
+    .td-sidebar__nav { display: flex; flex-direction: column; gap: 4px; padding: 18px 12px; flex: 1; }
+    .td-nav-item {
+      display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+      border-radius: 12px; font-size: 14px; font-weight: 600; color: rgba(255,255,255,.75);
+      cursor: pointer; transition: background .2s, color .2s; text-decoration: none;
+    }
+    .td-nav-item i { width: 20px; text-align: center; font-size: 16px; }
+    .td-nav-item:hover { background: rgba(255,255,255,.1); color: #fff; }
+    .td-nav-item.active { background: rgba(255,255,255,.18); color: #fff; }
+
+    /* ── Main area ── */
+    .td-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+    /* ── Top header ── */
+    .td-topbar {
+      background: linear-gradient(90deg, #16398d 0%, #1d4a9f 100%);
+      padding: 0 32px; height: 72px; display: flex; align-items: center;
+      justify-content: space-between; flex-shrink: 0;
+      box-shadow: 0 2px 12px rgba(0,0,0,.15);
+    }
+    .td-topbar__title { color: #fff; }
+    .td-topbar__title h1 { font-size: 20px; font-weight: 800; }
+    .td-topbar__title p { font-size: 13px; opacity: .8; margin-top: 1px; }
+    .td-topbar__right { display: flex; align-items: center; gap: 18px; }
+    .td-notif-btn {
+      position: relative; background: rgba(255,255,255,.15); border: none;
+      width: 40px; height: 40px; border-radius: 50%; color: #fff;
+      font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .td-notif-btn__badge {
+      position: absolute; top: 5px; right: 5px; width: 9px; height: 9px;
+      background: #ff4757; border-radius: 50%; border: 2px solid #1d4a9f;
+    }
+    .td-user { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .td-user__info { text-align: right; }
+    .td-user__info strong { font-size: 14px; font-weight: 700; color: #fff; display: block; }
+    .td-user__info span { font-size: 12px; color: rgba(255,255,255,.7); }
+    .td-user__avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, #a0c4ff, #6889e8);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: #fff;
+    }
+
+    /* ── Content ── */
+    .td-content { padding: 24px 28px; flex: 1; overflow-y: auto; }
+
+    /* Filter bar */
+    .td-filters { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .td-select {
+      height: 44px; padding: 0 16px; border-radius: 10px;
+      border: 1.5px solid #d0daea; background: #fff;
+      font-size: 14px; font-family: inherit; color: #333; cursor: pointer; outline: none;
+      min-width: 180px;
+    }
+    .td-search-box {
+      display: flex; align-items: center; gap: 8px;
+      background: #fff; border: 1.5px solid #d0daea; border-radius: 10px;
+      padding: 0 14px; height: 44px; flex: 1; max-width: 280px;
+    }
+    .td-search-box input { border: none; outline: none; font-size: 14px; font-family: inherit; flex: 1; }
+    .td-search-box i { color: #aaa; }
+    .td-year-select { margin-left: auto; }
+
+    /* Stats cards */
+    .td-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 24px; }
+    .td-card {
+      background: #fff; border-radius: 18px;
+      padding: 22px 20px; box-shadow: 0 4px 16px rgba(26,61,122,.07);
+    }
+    .td-card h4 { font-size: 13px; font-weight: 700; color: #555; margin-bottom: 14px; }
+
+    /* Donut chart (CSS only) */
+    .td-donut-wrap { display: flex; align-items: center; gap: 16px; }
+    .td-donut {
+      width: 100px; height: 100px; border-radius: 50%; flex-shrink: 0;
+      background: conic-gradient(#6a35c2 0% 78%, #e0d4f7 78% 100%);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .td-donut::before {
+      content: ''; position: absolute;
+      width: 66px; height: 66px; background: #fff; border-radius: 50%;
+    }
+    .td-donut__pct { position: relative; font-size: 20px; font-weight: 800; color: #1a3d7a; z-index: 1; }
+    .td-donut-legend { display: flex; flex-direction: column; gap: 6px; }
+    .td-legend-row { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #555; }
+    .td-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Bar chart (CSS only) */
+    .td-bars { display: flex; align-items: flex-end; gap: 10px; height: 80px; }
+    .td-bar-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+    .td-bar {
+      width: 100%; background: #c4aaee; border-radius: 6px 6px 0 0;
+      transition: background .2s;
+    }
+    .td-bar:hover { background: #9b6dd4; }
+    .td-bar-label { font-size: 11px; color: #888; }
+    .td-bar-avg { font-size: 12px; color: #555; margin-top: 8px; font-weight: 600; }
+    .td-bar-legend { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+    .td-bar-legend span { font-size: 12px; color: #666; display: flex; align-items: center; gap: 5px; }
+    .td-bar-legend-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+    /* Submission card */
+    .td-submit-icon { font-size: 48px; color: #6a35c2; margin-bottom: 8px; }
+    .td-submit-pct { font-size: 28px; font-weight: 800; color: #1a3d7a; }
+    .td-submit-legend { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+
+    /* Top students */
+    .td-top-students { display: flex; align-items: flex-end; justify-content: center; gap: 12px; height: 120px; }
+    .td-student-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .td-student-rank {
+      font-size: 11px; font-weight: 800; color: #fff;
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .td-student-rank--1 { background: #f0b429; }
+    .td-student-rank--2 { background: #a8b4c0; }
+    .td-student-rank--3 { background: #cd7f32; }
+    .td-student-avatar {
+      border-radius: 50%; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; background: #dbeaff;
+    }
+    .td-student-col--1 .td-student-avatar { width: 60px; height: 60px; }
+    .td-student-col--2 .td-student-avatar,
+    .td-student-col--3 .td-student-avatar { width: 48px; height: 48px; }
+    .td-student-name { font-size: 11px; color: #333; font-weight: 600; text-align: center; max-width: 70px; }
+    .td-student-score { font-size: 12px; color: #6a35c2; font-weight: 700; }
+
+    /* Table */
+    .td-table-card { background: #fff; border-radius: 18px; box-shadow: 0 4px 16px rgba(26,61,122,.07); overflow: hidden; }
+    .td-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .td-table th {
+      background: #f8f9ff; color: #1a3d7a; font-weight: 700;
+      padding: 14px 16px; text-align: center; font-size: 13px;
+    }
+    .td-table th:nth-child(2) { text-align: left; }
+    .td-table td { padding: 14px 16px; border-bottom: 1px solid #f0f3fa; text-align: center; }
+    .td-table td:nth-child(2) { text-align: left; }
+    .td-table tr:last-child td { border-bottom: none; }
+    .td-table tr:hover td { background: #fafaff; }
+
+    .td-name-cell { display: flex; align-items: center; gap: 10px; }
+    .td-name-avatar {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; background: #dbeaff;
+    }
+
+    .td-progress-bar { width: 80px; height: 8px; background: #e8ecf5; border-radius: 4px; margin: 0 auto; }
+    .td-progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #6a35c2, #9b6dd4); }
+
+    .td-status { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+    .td-status--pass { background: #d4edda; color: #155724; }
+    .td-status--follow { background: #fff3cd; color: #856404; }
+    .td-status--fail { background: #f8d7da; color: #721c24; }
+
+    .td-action-btn {
+      padding: 6px 14px; border-radius: 8px; border: none;
+      font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit;
+    }
+    .td-action-btn--view { background: #6a35c2; color: #fff; }
+    .td-action-btn--msg { background: #e8f0fe; color: #1a3d7a; }
+
+    @media (max-width: 1100px) {
+      .td-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .td-sidebar { display: none; }
+      .td-stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="td-sidebar">
+  <div class="td-sidebar__brand">
+    <div class="td-sidebar__brand-logo"><i class="fa-solid fa-database"></i></div>
+    <div class="td-sidebar__brand-text">
+      วิทยาลัยเทคนิคระยอง
+      <span>DBLearn Online</span>
+    </div>
+  </div>
+
+  <nav class="td-sidebar__nav">
+    <a href="{% url 'home' %}" class="td-nav-item"><i class="fa-solid fa-house"></i> หน้าแรก</a>
+    <a href="{% url 'lesson_detail' %}" class="td-nav-item"><i class="fa-solid fa-book-open"></i> บทเรียน</a>
+    <a href="#" class="td-nav-item"><i class="fa-solid fa-users"></i> นักเรียน</a>
+    <a href="{% url 'results' %}" class="td-nav-item"><i class="fa-solid fa-chart-bar"></i> คะแนน</a>
+    <a href="#" class="td-nav-item"><i class="fa-solid fa-file-lines"></i> รายงาน</a>
+    <a href="{% url 'teacher_dashboard' %}" class="td-nav-item active"><i class="fa-solid fa-chart-line"></i> สรุปความคืบหน้า</a>
+    <a href="#" class="td-nav-item"><i class="fa-solid fa-gear"></i> การตั้งค่า</a>
+  </nav>
+</aside>
+
+<!-- Main -->
+<div class="td-main">
+  <!-- Topbar -->
+  <header class="td-topbar">
+    <div class="td-topbar__title">
+      <h1>สรุปความคืบหน้าการเรียน – วิชาโปรแกรมฐานข้อมูล</h1>
+      <p>สรุปข้อมูลภาพรวมการเรียนการสอน (Teacher Dashboard)</p>
+    </div>
+    <div class="td-topbar__right">
+      <button class="td-notif-btn">
+        <i class="fa-regular fa-bell"></i>
+        <span class="td-notif-btn__badge"></span>
+      </button>
+      <div class="td-user">
+        <div class="td-user__info">
+          <strong>Teacher</strong>
+          <span>อ.สมชาย ส.</span>
+        </div>
+        <div class="td-user__avatar">👨‍🏫</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="td-content">
+
+    <!-- Filters -->
+    <div class="td-filters">
+      <select class="td-select"><option>เลือกห้องเรียน...</option><option>ห้อง 2101</option><option>ห้อง 2102</option></select>
+      <div class="td-search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="ค้นหานักเรียน...">
+      </div>
+      <select class="td-select td-year-select"><option>ปีการศึกษา 2567</option><option>ปีการศึกษา 2566</option></select>
+    </div>
+
+    <!-- Stats cards -->
+    <div class="td-stats">
+
+      <!-- Donut -->
+      <div class="td-card">
+        <h4>ความคืบหน้าบทเรียนภาพรวม</h4>
+        <div class="td-donut-wrap">
+          <div class="td-donut"><span class="td-donut__pct">78%</span></div>
+          <div class="td-donut-legend">
+            <div class="td-legend-row"><span class="td-legend-dot" style="background:#6a35c2"></span>บทเรียนทั้งหมด <strong style="margin-left:auto;">(12)</strong></div>
+            <div class="td-legend-row"><span class="td-legend-dot" style="background:#9b6dd4"></span>เสร็จสิ้น <strong style="margin-left:auto;">(9.3)</strong></div>
+            <div class="td-legend-row"><span class="td-legend-dot" style="background:#e0d4f7"></span>ยังไม่เสร็จ <strong style="margin-left:auto;">(2.7)</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bar chart -->
+      <div class="td-card">
+        <h4>คะแนนเฉลี่ยห้องเรียน</h4>
+        <div class="td-bars">
+          <div class="td-bar-col"><div class="td-bar" style="height:80%;background:#9b6dd4"></div><span class="td-bar-label">Q1</span></div>
+          <div class="td-bar-col"><div class="td-bar" style="height:68%"></div><span class="td-bar-label">Q2</span></div>
+          <div class="td-bar-col"><div class="td-bar" style="height:75%"></div><span class="td-bar-label">Q3</span></div>
+        </div>
+        <p class="td-bar-avg">เฉลี่ย (B+) 74.5/100</p>
+        <div class="td-bar-legend">
+          <span><span class="td-bar-legend-dot" style="background:#9b6dd4"></span>Quizzes (81.2)</span>
+          <span><span class="td-bar-legend-dot" style="background:#c4aaee"></span>Homework (70.1)</span>
+        </div>
+      </div>
+
+      <!-- Submission -->
+      <div class="td-card">
+        <h4>นักเรียนที่ส่งงาน</h4>
+        <div style="text-align:center;">
+          <div class="td-submit-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+          <div class="td-submit-pct">ส่งแล้ว 92%</div>
+        </div>
+        <div class="td-submit-legend">
+          <div class="td-legend-row"><span class="td-legend-dot" style="background:#6a35c2"></span>งานที่ส่งทั้งหมด <strong style="margin-left:auto;">(245)</strong></div>
+          <div class="td-legend-row"><span class="td-legend-dot" style="background:#f39c12"></span>รอตรวจ <strong style="margin-left:auto;">(19)</strong></div>
+        </div>
+      </div>
+
+      <!-- Top students -->
+      <div class="td-card">
+        <h4>นักเรียนคะแนนสูงสุด</h4>
+        <div class="td-top-students">
+          <div class="td-student-col td-student-col--2">
+            <span class="td-student-rank td-student-rank--2">2</span>
+            <div class="td-student-avatar">👩</div>
+            <span class="td-student-name">ศิริพร พ.</span>
+            <span class="td-student-score">94%</span>
+          </div>
+          <div class="td-student-col td-student-col--1">
+            <span class="td-student-rank td-student-rank--1">1</span>
+            <div class="td-student-avatar">👨</div>
+            <span class="td-student-name">สมชาย จ.</span>
+            <span class="td-student-score">96%</span>
+          </div>
+          <div class="td-student-col td-student-col--3">
+            <span class="td-student-rank td-student-rank--3">3</span>
+            <div class="td-student-avatar">👧</div>
+            <span class="td-student-name">มาลี ส.</span>
+            <span class="td-student-score">93%</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Student table -->
+    <div class="td-table-card">
+      <table class="td-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>ชื่อ-นามสกุล</th>
+            <th>ห้องเรียน</th>
+            <th>คะแนนรวม</th>
+            <th>Quiz</th>
+            <th>HW</th>
+            <th>Exam</th>
+            <th>ความคืบหน้า</th>
+            <th>สถานะ</th>
+            <th>การดำเนินการ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>21</td>
+            <td><div class="td-name-cell"><div class="td-name-avatar">👨</div>สมชาย จ. Vinh</div></td>
+            <td>ห้องเรียน</td><td>85%</td><td>85</td><td>84</td><td>84</td>
+            <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:85%"></div></div></td>
+            <td><span class="td-status td-status--pass">ผ่าน</span></td>
+            <td style="display:flex;gap:6px;justify-content:center;">
+              <button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button>
+              <button class="td-action-btn td-action-btn--msg">ส่งข้อความ</button>
+            </td>
+          </tr>
+          <tr>
+            <td>22</td>
+            <td><div class="td-name-cell"><div class="td-name-avatar">👩</div>ศิริพร พ. Thai</div></td>
+            <td>ห้องเรียน</td><td>92%</td><td>92</td><td>92</td><td>92</td>
+            <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:92%"></div></div></td>
+            <td><span class="td-status td-status--pass">ผ่าน</span></td>
+            <td style="display:flex;gap:6px;justify-content:center;">
+              <button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button>
+              <button class="td-action-btn td-action-btn--msg">ส่งข้อความ</button>
+            </td>
+          </tr>
+          <tr>
+            <td>23</td>
+            <td><div class="td-name-cell"><div class="td-name-avatar">👨</div>วิเชน นา. Rang</div></td>
+            <td>ห้องเรียน</td><td>60%</td><td>64</td><td>54</td><td>60</td>
+            <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:60%;background:linear-gradient(90deg,#f0b429,#e8a800)"></div></div></td>
+            <td><span class="td-status td-status--follow">ติดตาม</span></td>
+            <td style="display:flex;gap:6px;justify-content:center;">
+              <button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button>
+              <button class="td-action-btn td-action-btn--msg">ส่งข้อความ</button>
+            </td>
+          </tr>
+          <tr>
+            <td>24</td>
+            <td><div class="td-name-cell"><div class="td-name-avatar">👩</div>มาลี ส. Yndi</div></td>
+            <td>ห้องเรียน</td><td>75%</td><td>75</td><td>75</td><td>75</td>
+            <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:75%"></div></div></td>
+            <td><span class="td-status td-status--fail">ไม่ผ่าน</span></td>
+            <td style="display:flex;gap:6px;justify-content:center;">
+              <button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button>
+              <button class="td-action-btn td-action-btn--msg">ส่งข้อความ</button>
+            </td>
+          </tr>
+          <tr>
+            <td>25</td>
+            <td><div class="td-name-cell"><div class="td-name-avatar">👨</div>สมชาย จ. Thai</div></td>
+            <td>ห้องเรียน</td><td>100%</td><td>90</td><td>80</td><td>100</td>
+            <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:100%"></div></div></td>
+            <td><span class="td-status td-status--fail">ไม่ผ่าน</span></td>
+            <td style="display:flex;gap:6px;justify-content:center;">
+              <button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button>
+              <button class="td-action-btn td-action-btn--msg">ส่งข้อความ</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

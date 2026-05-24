@@ -1,0 +1,448 @@
+{% extends 'dblearn/lesson_base.html' %}
+{% load static %}
+
+{% block title %}แบบฝึกหัด{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Layout ── */
+  .ex-page { display: flex; flex-direction: column; gap: 20px; }
+
+  /* ── Header card ── */
+  .ex-header {
+    background: linear-gradient(135deg, #1a3d7a 0%, #234a9d 100%);
+    border-radius: 20px; padding: 24px 32px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+  }
+  .ex-header__left h2 { font-size: 22px; font-weight: 800; color: #fff; }
+  .ex-header__left p  { font-size: 14px; color: rgba(255,255,255,.75); margin-top: 4px; }
+  .ex-header__stats { display: flex; gap: 20px; }
+  .ex-stat { text-align: center; }
+  .ex-stat__num  { font-size: 28px; font-weight: 800; color: #fff; line-height: 1; }
+  .ex-stat__label { font-size: 12px; color: rgba(255,255,255,.7); margin-top: 2px; }
+
+  /* ── Progress bar ── */
+  .ex-progress-wrap { background: #fff; border-radius: 16px; padding: 18px 24px; box-shadow: 0 4px 16px rgba(26,61,122,.07); }
+  .ex-progress-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 10px; }
+  .ex-progress-bar { height: 10px; background: #e8edf5; border-radius: 5px; overflow: hidden; }
+  .ex-progress-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, #1a9e5c, #22c870); transition: width .4s ease; }
+
+  /* ── Exercise card ── */
+  .ex-card {
+    background: #fff; border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(26,61,122,.07);
+    overflow: hidden;
+  }
+  .ex-card__top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 24px; border-bottom: 1px solid #f0f4fb; flex-wrap: wrap; gap: 10px;
+  }
+  .ex-card__num {
+    font-size: 13px; font-weight: 700; color: #3a8fea;
+    background: #e8f3ff; padding: 4px 12px; border-radius: 20px;
+  }
+  .ex-card__title { font-size: 17px; font-weight: 700; color: #1a3d7a; flex: 1; margin: 0 16px; }
+  .ex-badge {
+    font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px;
+  }
+  .ex-badge--easy   { background: #d4edda; color: #155724; }
+  .ex-badge--medium { background: #fff3cd; color: #856404; }
+  .ex-badge--hard   { background: #f8d7da; color: #721c24; }
+
+  /* Body */
+  .ex-card__body { padding: 24px; }
+
+  /* Scenario box */
+  .ex-scenario {
+    background: #f8f9ff; border-left: 4px solid #3a8fea;
+    border-radius: 0 12px 12px 0; padding: 16px 20px; margin-bottom: 20px;
+    font-size: 14px; color: #333; line-height: 1.7;
+  }
+  .ex-scenario strong { color: #1a3d7a; }
+
+  /* Table preview */
+  .ex-table-wrap { overflow-x: auto; margin-bottom: 20px; }
+  .ex-table {
+    border-collapse: collapse; font-size: 13px; min-width: 400px; width: 100%;
+  }
+  .ex-table th {
+    background: #1a3d7a; color: #fff; padding: 9px 14px;
+    text-align: left; font-weight: 700; font-size: 13px;
+  }
+  .ex-table td { padding: 8px 14px; border-bottom: 1px solid #edf2f7; color: #333; }
+  .ex-table tr:last-child td { border-bottom: none; }
+  .ex-table tr:hover td { background: #f8f9ff; }
+
+  /* Question */
+  .ex-question {
+    font-size: 15px; font-weight: 700; color: #1a3d7a;
+    margin-bottom: 14px; display: flex; align-items: flex-start; gap: 8px;
+  }
+  .ex-question i { color: #3a8fea; margin-top: 2px; flex-shrink: 0; }
+
+  /* Code input area */
+  .ex-code-wrap { position: relative; margin-bottom: 14px; }
+  .ex-code-label {
+    font-size: 12px; font-weight: 700; color: #888;
+    background: #f0f4fb; padding: 6px 14px 6px 14px;
+    border-radius: 8px 8px 0 0; border: 1.5px solid #dce8f3; border-bottom: none;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .ex-code-label i { color: #3a8fea; }
+  .ex-textarea {
+    width: 100%; min-height: 100px; padding: 14px 16px;
+    border: 1.5px solid #dce8f3; border-radius: 0 0 10px 10px;
+    font-family: 'Courier New', monospace; font-size: 14px;
+    color: #1f2b3a; resize: vertical; outline: none;
+    background: #fafbff; line-height: 1.6;
+    transition: border-color .2s;
+  }
+  .ex-textarea:focus { border-color: #3a8fea; background: #fff; }
+
+  /* Buttons row */
+  .ex-btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .ex-btn {
+    padding: 10px 20px; border-radius: 10px; border: none;
+    font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 7px;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .ex-btn:hover { transform: translateY(-1px); }
+  .ex-btn--check {
+    background: linear-gradient(90deg, #1a3d7a, #234a9d);
+    color: #fff; box-shadow: 0 4px 12px rgba(26,61,122,.25);
+  }
+  .ex-btn--hint {
+    background: #fff3cd; color: #856404; border: 1.5px solid #ffe69c;
+  }
+  .ex-btn--reset {
+    background: #f0f4fb; color: #555; border: 1.5px solid #dce8f3;
+  }
+
+  /* Hint box */
+  .ex-hint {
+    display: none; background: #fffbea; border: 1.5px solid #ffe69c;
+    border-radius: 10px; padding: 14px 18px; margin-top: 12px;
+    font-size: 14px; color: #6b5900; line-height: 1.7;
+  }
+  .ex-hint.show { display: block; }
+  .ex-hint strong { color: #856404; }
+
+  /* Result box */
+  .ex-result {
+    display: none; border-radius: 10px; padding: 14px 18px; margin-top: 12px;
+    font-size: 14px; line-height: 1.7;
+  }
+  .ex-result.correct {
+    display: block; background: #d4edda; border: 1.5px solid #a8d5b5; color: #155724;
+  }
+  .ex-result.wrong {
+    display: block; background: #f8d7da; border: 1.5px solid #f5c2c7; color: #721c24;
+  }
+  .ex-result__answer { font-family: 'Courier New', monospace; background: rgba(0,0,0,.06); border-radius: 6px; padding: 8px 12px; margin-top: 8px; font-size: 13px; }
+
+  /* ── Navigation ── */
+  .ex-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fff; border-radius: 16px; padding: 16px 20px;
+    box-shadow: 0 4px 16px rgba(26,61,122,.07);
+  }
+  .ex-nav-btn {
+    height: 44px; padding: 0 22px; border-radius: 12px; border: none;
+    font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(90deg, #1a3d7a, #234a9d);
+    color: #fff; box-shadow: 0 4px 12px rgba(26,61,122,.2);
+    transition: transform .15s;
+  }
+  .ex-nav-btn:hover { transform: translateY(-1px); }
+  .ex-nav-btn:disabled { background: #e0e7ef; color: #999; box-shadow: none; cursor: default; transform: none; }
+  .ex-nav-dots { display: flex; gap: 8px; }
+  .ex-nav-dot {
+    width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 700; font-family: inherit;
+    background: #f0f4fb; color: #555; transition: background .2s, color .2s;
+  }
+  .ex-nav-dot.done    { background: #d4edda; color: #155724; }
+  .ex-nav-dot.current { background: #1a3d7a; color: #fff; }
+  .ex-nav-dot.correct { background: #1a9e5c; color: #fff; }
+  .ex-nav-dot.wrong   { background: #dc3545; color: #fff; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ex-page">
+
+  <!-- Header -->
+  <div class="ex-header">
+    <div class="ex-header__left">
+      <h2><i class="fa-solid fa-pen-to-square"></i> แบบฝึกหัด SQL พื้นฐาน</h2>
+      <p>ฝึกเขียนคำสั่ง SQL ด้วยโจทย์จริง · บทที่ 1–3</p>
+    </div>
+    <div class="ex-header__stats">
+      <div class="ex-stat"><div class="ex-stat__num" id="statDone">0</div><div class="ex-stat__label">ทำแล้ว</div></div>
+      <div class="ex-stat"><div class="ex-stat__num" id="statCorrect">0</div><div class="ex-stat__label">ถูก</div></div>
+      <div class="ex-stat"><div class="ex-stat__num">5</div><div class="ex-stat__label">ทั้งหมด</div></div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="ex-progress-wrap">
+    <div class="ex-progress-label">
+      <span>ความคืบหน้า</span>
+      <span id="progressPct">0 / 5</span>
+    </div>
+    <div class="ex-progress-bar">
+      <div class="ex-progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Exercise card -->
+  <div class="ex-card" id="exCard">
+    <div class="ex-card__top">
+      <span class="ex-card__num" id="exNum">ข้อที่ 1</span>
+      <span class="ex-card__title" id="exTitle"></span>
+      <span class="ex-badge" id="exBadge"></span>
+    </div>
+    <div class="ex-card__body">
+      <div class="ex-scenario" id="exScenario"></div>
+      <div id="exTableWrap"></div>
+      <div class="ex-question"><i class="fa-solid fa-circle-question"></i><span id="exQuestion"></span></div>
+      <div class="ex-code-wrap">
+        <div class="ex-code-label"><i class="fa-solid fa-code"></i> พิมพ์คำสั่ง SQL ของคุณที่นี่</div>
+        <textarea class="ex-textarea" id="codeInput" placeholder="เช่น SELECT * FROM students;"></textarea>
+      </div>
+      <div class="ex-btn-row">
+        <button class="ex-btn ex-btn--check" onclick="checkAnswer()"><i class="fa-solid fa-check"></i> ตรวจคำตอบ</button>
+        <button class="ex-btn ex-btn--hint"  onclick="toggleHint()"><i class="fa-solid fa-lightbulb"></i> ดูคำใบ้</button>
+        <button class="ex-btn ex-btn--reset" onclick="resetInput()"><i class="fa-solid fa-rotate-left"></i> ล้าง</button>
+      </div>
+      <div class="ex-hint" id="hintBox"></div>
+      <div class="ex-result" id="resultBox"></div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="ex-nav">
+    <button class="ex-nav-btn" id="prevBtn" onclick="goTo(cur-1)"><i class="fa-solid fa-chevron-left"></i> ก่อนหน้า</button>
+    <div class="ex-nav-dots" id="navDots"></div>
+    <button class="ex-nav-btn" id="nextBtn" onclick="goTo(cur+1)">ถัดไป <i class="fa-solid fa-chevron-right"></i></button>
+  </div>
+
+</div>
+
+<script>
+const exercises = [
+  {
+    title: "ดึงข้อมูลนักเรียนทั้งหมด",
+    level: "easy",
+    scenario: `มีตาราง <strong>students</strong> เก็บข้อมูลนักเรียนในโรงเรียน`,
+    table: {
+      headers: ["id","name","grade","score"],
+      rows: [
+        ["1","สมชาย ใจดี","ม.4","88"],
+        ["2","สมหญิง รักเรียน","ม.4","92"],
+        ["3","วิชัย เก่งกาจ","ม.5","75"],
+      ]
+    },
+    question: "เขียนคำสั่ง SQL เพื่อดึงข้อมูลนักเรียนทั้งหมดออกมา",
+    hint: "ใช้คำสั่ง <strong>SELECT *</strong> และระบุชื่อตารางด้วย <strong>FROM</strong>",
+    answers: ["select * from students", "select * from students;"],
+    explanation: "SELECT * FROM students — ดึงทุก column จากตาราง students"
+  },
+  {
+    title: "กรองข้อมูลด้วย WHERE",
+    level: "easy",
+    scenario: `ใช้ตาราง <strong>students</strong> เดิม ต้องการค้นหาเฉพาะนักเรียนที่มีคะแนนมากกว่า 80`,
+    table: {
+      headers: ["id","name","grade","score"],
+      rows: [
+        ["1","สมชาย ใจดี","ม.4","88"],
+        ["2","สมหญิง รักเรียน","ม.4","92"],
+        ["3","วิชัย เก่งกาจ","ม.5","75"],
+      ]
+    },
+    question: "เขียนคำสั่ง SQL เพื่อดึงข้อมูลนักเรียนที่มี score มากกว่า 80",
+    hint: "ใช้ <strong>WHERE</strong> ตามหลัง FROM เช่น <code>WHERE score > 80</code>",
+    answers: ["select * from students where score > 80", "select * from students where score>80"],
+    explanation: "SELECT * FROM students WHERE score > 80 — กรองเฉพาะแถวที่ score มากกว่า 80"
+  },
+  {
+    title: "เรียงลำดับข้อมูล",
+    level: "medium",
+    scenario: `ใช้ตาราง <strong>students</strong> ต้องการแสดงรายชื่อนักเรียนเรียงจากคะแนนมากสุดไปน้อยสุด`,
+    table: {
+      headers: ["id","name","score"],
+      rows: [
+        ["1","สมชาย ใจดี","88"],
+        ["2","สมหญิง รักเรียน","92"],
+        ["3","วิชัย เก่งกาจ","75"],
+      ]
+    },
+    question: "เขียนคำสั่ง SQL ดึง name และ score เรียงจากมากไปน้อย",
+    hint: "ใช้ <strong>ORDER BY score DESC</strong> ต่อท้าย — DESC คือ descending (มากไปน้อย)",
+    answers: [
+      "select name, score from students order by score desc",
+      "select name,score from students order by score desc",
+    ],
+    explanation: "SELECT name, score FROM students ORDER BY score DESC — เลือก 2 คอลัมน์แล้วเรียงลำดับ"
+  },
+  {
+    title: "นับจำนวนแถว",
+    level: "medium",
+    scenario: `ต้องการทราบว่ามีนักเรียนในระบบทั้งหมดกี่คน โดยใช้ตาราง <strong>students</strong>`,
+    table: {
+      headers: ["id","name","score"],
+      rows: [
+        ["1","สมชาย ใจดี","88"],
+        ["2","สมหญิง รักเรียน","92"],
+        ["3","วิชัย เก่งกาจ","75"],
+      ]
+    },
+    question: "เขียนคำสั่ง SQL เพื่อนับจำนวนนักเรียนทั้งหมดในตาราง",
+    hint: "ใช้ฟังก์ชัน <strong>COUNT(*)</strong> เช่น <code>SELECT COUNT(*) FROM ...</code>",
+    answers: [
+      "select count(*) from students",
+      "select count(*) from students;",
+    ],
+    explanation: "SELECT COUNT(*) FROM students — นับจำนวนแถวทั้งหมดในตาราง"
+  },
+  {
+    title: "เพิ่มข้อมูลใหม่",
+    level: "hard",
+    scenario: `ต้องการเพิ่มนักเรียนใหม่ชื่อ <strong>มานี มีสุข</strong> ชั้น <strong>ม.6</strong> คะแนน <strong>95</strong> เข้าตาราง students`,
+    table: {
+      headers: ["id","name","grade","score"],
+      rows: [
+        ["1","สมชาย ใจดี","ม.4","88"],
+        ["2","สมหญิง รักเรียน","ม.4","92"],
+        ["3","วิชัย เก่งกาจ","ม.5","75"],
+      ]
+    },
+    question: "เขียนคำสั่ง SQL เพื่อเพิ่มนักเรียนคนใหม่ตามข้อมูลข้างต้น",
+    hint: "ใช้ <strong>INSERT INTO</strong> ตามด้วยชื่อตาราง คอลัมน์ และ <strong>VALUES</strong>",
+    answers: [
+      "insert into students (name, grade, score) values ('มานี มีสุข', 'ม.6', 95)",
+      "insert into students (name,grade,score) values ('มานี มีสุข','ม.6',95)",
+    ],
+    explanation: "INSERT INTO students (name, grade, score) VALUES ('มานี มีสุข', 'ม.6', 95)"
+  }
+]
+
+let cur = 0
+const state = exercises.map(() => ({ done: false, correct: false }))
+
+function levelLabel(l) {
+  return { easy: 'ง่าย', medium: 'ปานกลาง', hard: 'ยาก' }[l]
+}
+function levelClass(l) {
+  return { easy: 'ex-badge--easy', medium: 'ex-badge--medium', hard: 'ex-badge--hard' }[l]
+}
+
+function renderExercise() {
+  const ex = exercises[cur]
+  document.getElementById('exNum').textContent   = 'ข้อที่ ' + (cur + 1)
+  document.getElementById('exTitle').textContent = ex.title
+  const badge = document.getElementById('exBadge')
+  badge.textContent  = levelLabel(ex.level)
+  badge.className    = 'ex-badge ' + levelClass(ex.level)
+  document.getElementById('exScenario').innerHTML = ex.scenario
+  document.getElementById('exQuestion').textContent = ex.question
+  document.getElementById('codeInput').value = ''
+  document.getElementById('hintBox').classList.remove('show')
+  document.getElementById('hintBox').innerHTML = '<i class="fa-solid fa-lightbulb"></i> ' + ex.hint
+  document.getElementById('resultBox').className = 'ex-result'
+  document.getElementById('resultBox').innerHTML = ''
+
+  // Table
+  const tw = document.getElementById('exTableWrap')
+  const h = ex.table.headers.map(c => `<th>${c}</th>`).join('')
+  const rows = ex.table.rows.map(r => '<tr>' + r.map(c => `<td>${c}</td>`).join('') + '</tr>').join('')
+  tw.innerHTML = `<div class="ex-table-wrap"><table class="ex-table"><thead><tr>${h}</tr></thead><tbody>${rows}</tbody></table></div>`
+
+  // nav buttons
+  document.getElementById('prevBtn').disabled = cur === 0
+  document.getElementById('nextBtn').disabled = cur === exercises.length - 1
+
+  renderDots()
+}
+
+function renderDots() {
+  const wrap = document.getElementById('navDots')
+  wrap.innerHTML = ''
+  exercises.forEach((_, i) => {
+    const btn = document.createElement('button')
+    btn.className = 'ex-nav-dot' +
+      (i === cur ? ' current' : '') +
+      (!state[i].done ? '' : state[i].correct ? ' correct' : ' wrong')
+    btn.textContent = i + 1
+    btn.onclick = () => goTo(i)
+    wrap.appendChild(btn)
+  })
+}
+
+function updateStats() {
+  const done = state.filter(s => s.done).length
+  const correct = state.filter(s => s.correct).length
+  document.getElementById('statDone').textContent = done
+  document.getElementById('statCorrect').textContent = correct
+  document.getElementById('progressPct').textContent = done + ' / ' + exercises.length
+  document.getElementById('progressFill').style.width = (done / exercises.length * 100) + '%'
+}
+
+function normalize(str) {
+  return str.toLowerCase().replace(/\s+/g, ' ').replace(/;$/, '').trim()
+}
+
+function checkAnswer() {
+  const input = normalize(document.getElementById('codeInput').value)
+  if (!input) return
+  const ex = exercises[cur]
+  const correct = ex.answers.some(a => normalize(a) === input)
+  state[cur] = { done: true, correct }
+
+  const box = document.getElementById('resultBox')
+  if (correct) {
+    box.className = 'ex-result correct'
+    box.innerHTML = '<strong><i class="fa-solid fa-circle-check"></i> ถูกต้อง!</strong> คำสั่งของคุณถูกต้องแล้วครับ'
+  } else {
+    box.className = 'ex-result wrong'
+    box.innerHTML = `<strong><i class="fa-solid fa-circle-xmark"></i> ยังไม่ถูกต้อง</strong> ลองตรวจสอบคำสั่งอีกครั้ง
+      <div class="ex-result__answer">เฉลย: ${ex.explanation}</div>`
+  }
+  updateStats()
+  renderDots()
+}
+
+function toggleHint() {
+  document.getElementById('hintBox').classList.toggle('show')
+}
+
+function resetInput() {
+  document.getElementById('codeInput').value = ''
+  document.getElementById('resultBox').className = 'ex-result'
+  document.getElementById('hintBox').classList.remove('show')
+}
+
+function goTo(i) {
+  if (i < 0 || i >= exercises.length) return
+  cur = i
+  renderExercise()
+}
+
+// allow Tab key inside textarea
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('codeInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Tab') {
+      e.preventDefault()
+      const s = this.selectionStart
+      this.value = this.value.substring(0, s) + '  ' + this.value.substring(this.selectionEnd)
+      this.selectionStart = this.selectionEnd = s + 2
+    }
+    if (e.key === 'Enter' && e.ctrlKey) checkAnswer()
+  })
+})
+
+renderExercise()
+</script>
+{% endblock %}

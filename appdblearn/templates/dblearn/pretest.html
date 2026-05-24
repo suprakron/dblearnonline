@@ -1,0 +1,180 @@
+{% extends 'dblearn/lesson_base.html' %}
+{% load static %}
+
+{% block title %}แบบทดสอบก่อนเรียน{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/test.css' %}">
+<style>
+  .quiz-topbar h2 { color: #1a3d7a; }
+  .quiz-timer { background: linear-gradient(180deg,#e8f4e8 0%,#d4edda 100%); color: #1e6b35; }
+  .quiz-timer--warning { background: linear-gradient(180deg,#fff3cd 0%,#ffe69c 100%) !important; color: #856404 !important; }
+  .quiz-timer--danger  { background: linear-gradient(180deg,#f8d7da 0%,#f5c2c7 100%) !important; color: #842029 !important; animation: pulse .8s infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+  .quiz-submit-row { display: flex; justify-content: flex-end; margin-top: 18px; }
+  .quiz-btn--submit {
+    min-width: 180px; height: 58px; border: none; border-radius: 16px;
+    background: linear-gradient(180deg,#1a9e5c 0%,#158049 100%);
+    color: #fff; font-size: 18px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 8px 18px rgba(21,128,73,.28);
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    font-family: inherit;
+  }
+  .quiz-btn--submit:hover { transform: translateY(-2px); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="quiz-topbar">
+  <h2>แบบทดสอบก่อนเรียน : บทที่ 1–3</h2>
+  <div class="quiz-timer" id="quizTimer">10:00 นาที</div>
+</div>
+
+<section class="quiz-question-card">
+  <h3>ข้อที่ <span id="currentQNum">1</span> : <span id="questionText"></span></h3>
+
+  <div class="quiz-options-grid" id="optionsGrid"></div>
+
+  <div class="quiz-nav-row">
+    <button class="quiz-btn quiz-btn--prev" id="prevBtn" onclick="changeQuestion(-1)">
+      <i class="fa-solid fa-chevron-left"></i> ก่อนหน้า
+    </button>
+    <div class="quiz-progress-text">ข้อ <span id="progressCurrent">1</span> จาก 10</div>
+    <button class="quiz-btn quiz-btn--next" id="nextBtn" onclick="changeQuestion(1)">
+      ถัดไป <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+
+  <div class="quiz-submit-row" id="submitRow" style="display:none;">
+    <button class="quiz-btn--submit" onclick="submitQuiz()">
+      <i class="fa-solid fa-paper-plane"></i> ส่งคำตอบ
+    </button>
+  </div>
+</section>
+
+<section class="quiz-number-panel">
+  <div class="quiz-number-grid" id="numberGrid"></div>
+</section>
+
+<!-- Result Modal -->
+<div id="resultModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:500; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:28px; padding:48px 56px; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.2); max-width:480px; width:90%;">
+    <div style="font-size:64px; margin-bottom:16px;">🎉</div>
+    <h2 style="font-size:32px; font-weight:800; color:#1a3d7a; margin-bottom:8px;">ส่งคำตอบสำเร็จ!</h2>
+    <p style="font-size:20px; color:#444; margin-bottom:24px;">คะแนนของคุณ</p>
+    <div style="font-size:72px; font-weight:800; color:#1a9e5c; line-height:1;" id="modalScore">0</div>
+    <div style="font-size:22px; color:#666; margin-bottom:8px;" id="modalTotal">จาก 10 ข้อ</div>
+    <div style="font-size:18px; color:#888; margin-bottom:32px;" id="modalPct"></div>
+    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+      <a href="{% url 'results' %}" style="min-width:160px; height:52px; border-radius:14px; background:linear-gradient(180deg,#234a9d 0%,#1d418f 100%); color:#fff; font-size:18px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none;">
+        <i class="fa-solid fa-chart-bar"></i> ดูผลการเรียน
+      </a>
+      <a href="{% url 'posttest' %}" style="min-width:160px; height:52px; border-radius:14px; background:linear-gradient(180deg,#1a9e5c 0%,#158049 100%); color:#fff; font-size:18px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none;">
+        <i class="fa-solid fa-file-circle-check"></i> ทำแบบทดสอบหลังเรียน
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  { q: "ฐานข้อมูล (Database) คืออะไร?", opts: ["การจัดเก็บข้อมูลอย่างเป็นระบบ","โปรแกรมสำหรับออกแบบเว็บ","ภาษาสำหรับเขียนโปรแกรม","อุปกรณ์จัดเก็บข้อมูลทางกายภาพ"], ans: "A" },
+  { q: "ตาราง (Table) ในฐานข้อมูลเปรียบได้กับอะไร?", opts: ["กราฟแสดงผล","สเปรดชีตที่มีแถวและคอลัมน์","แฟ้มเอกสาร Word","รูปภาพดิจิทัล"], ans: "B" },
+  { q: "คำสั่ง SQL คือภาษาที่ใช้ทำอะไร?", opts: ["ออกแบบเว็บไซต์","สื่อสารกับฐานข้อมูล","เขียนแอปมือถือ","สร้างกราฟิก"], ans: "B" },
+  { q: "ข้อใดคือตัวอย่างของ DBMS?", opts: ["Microsoft Word","Adobe Photoshop","MySQL","Google Chrome"], ans: "C" },
+  { q: "Field หรือ Column ในตารางคืออะไร?", opts: ["แถวของข้อมูล","ประเภทหรือหมวดหมู่ของข้อมูล","ชื่อตาราง","คีย์หลัก"], ans: "B" },
+  { q: "Record หรือ Row ในตารางคืออะไร?", opts: ["ชื่อของคอลัมน์","ข้อมูลหนึ่งชุดหรือหนึ่งรายการ","ชื่อตาราง","ประเภทข้อมูล"], ans: "B" },
+  { q: "ข้อใดคือประโยชน์หลักของการใช้ฐานข้อมูล?", opts: ["ทำให้ข้อมูลสูญหายง่าย","ลดความซ้ำซ้อนและจัดการข้อมูลได้มีประสิทธิภาพ","เพิ่มขนาดไฟล์","ทำให้ค้นหายากขึ้น"], ans: "B" },
+  { q: "คำสั่ง SELECT ใช้ทำอะไรใน SQL?", opts: ["ลบข้อมูล","เพิ่มข้อมูล","ดึงหรือแสดงข้อมูล","แก้ไขตาราง"], ans: "C" },
+  { q: "ข้อใดไม่ใช่ชนิดของฐานข้อมูล?", opts: ["Relational Database","NoSQL Database","Spreadsheet Database","Network Database"], ans: "C" },
+  { q: "ER Diagram ย่อมาจากอะไร?", opts: ["Error Report Diagram","Entity-Relationship Diagram","Extended Record Diagram","Element Relation Diagram"], ans: "B" },
+]
+
+let current = 0
+const answers = new Array(questions.length).fill(null)
+
+function buildNumberGrid() {
+  const grid = document.getElementById('numberGrid')
+  grid.innerHTML = ''
+  questions.forEach((_, i) => {
+    const btn = document.createElement('button')
+    btn.className = 'quiz-number' +
+      (answers[i] ? ' quiz-number--done' : '') +
+      (i === current ? ' quiz-number--current' : '')
+    btn.textContent = i + 1
+    btn.onclick = () => goTo(i)
+    grid.appendChild(btn)
+  })
+}
+
+function renderQuestion() {
+  const q = questions[current]
+  document.getElementById('currentQNum').textContent = current + 1
+  document.getElementById('progressCurrent').textContent = current + 1
+  document.getElementById('questionText').textContent = q.q
+
+  const grid = document.getElementById('optionsGrid')
+  grid.innerHTML = ''
+  q.opts.forEach((opt, i) => {
+    const val = ['A','B','C','D'][i]
+    const selected = answers[current] === val
+    const label = document.createElement('label')
+    label.className = 'quiz-option' + (selected ? ' quiz-option--selected' : '')
+    label.innerHTML = `<input type="radio" name="q" value="${val}" ${selected ? 'checked' : ''}>
+      <span class="quiz-option__radio"></span>
+      <span class="quiz-option__text">${opt}</span>`
+    label.querySelector('input').addEventListener('change', () => {
+      answers[current] = val
+      document.querySelectorAll('#optionsGrid .quiz-option').forEach(l => l.classList.remove('quiz-option--selected'))
+      label.classList.add('quiz-option--selected')
+      buildNumberGrid()
+    })
+    grid.appendChild(label)
+  })
+
+  document.getElementById('prevBtn').disabled = current === 0
+  const isLast = current === questions.length - 1
+  document.getElementById('nextBtn').style.display = isLast ? 'none' : ''
+  document.getElementById('submitRow').style.display = isLast ? 'flex' : 'none'
+  buildNumberGrid()
+}
+
+function goTo(i) { current = i; renderQuestion() }
+function changeQuestion(dir) { goTo(Math.max(0, Math.min(questions.length - 1, current + dir))) }
+
+function submitQuiz() {
+  clearInterval(timerInterval)
+  const score = answers.filter((a, i) => a === questions[i].ans).length
+  const pct = Math.round(score / questions.length * 100)
+  document.getElementById('modalScore').textContent = score
+  document.getElementById('modalTotal').textContent = 'จาก ' + questions.length + ' ข้อ'
+  document.getElementById('modalPct').textContent = pct + '%'
+  const modal = document.getElementById('resultModal')
+  modal.style.display = 'flex'
+}
+
+/* ── Timer ── */
+let timeLeft = 10 * 60
+const timerEl = document.getElementById('quizTimer')
+
+const timerInterval = setInterval(() => {
+  timeLeft--
+  const m = String(Math.floor(timeLeft / 60)).padStart(2, '0')
+  const s = String(timeLeft % 60).padStart(2, '0')
+  timerEl.textContent = m + ':' + s + ' นาที'
+
+  if (timeLeft <= 60) {
+    timerEl.className = 'quiz-timer quiz-timer--danger'
+  } else if (timeLeft <= 3 * 60) {
+    timerEl.className = 'quiz-timer quiz-timer--warning'
+  }
+
+  if (timeLeft <= 0) {
+    clearInterval(timerInterval)
+    submitQuiz()
+  }
+}, 1000)
+
+renderQuestion()
+</script>
+{% endblock %}

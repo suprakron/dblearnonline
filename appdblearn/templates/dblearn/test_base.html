@@ -1,0 +1,166 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}แบบทดสอบก่อนเรียน{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link rel="stylesheet" href="{% static 'css/test.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <div class="lesson-page">
+
+        <!-- HEADER -->
+        <header class="lesson-header">
+            <div class="lesson-header__brand">
+                <div class="site-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+             <div class="site-brand-text">
+                <h1>DBLearn</h1>
+             </div>
+            </div>
+
+            <div class="lesson-header__right">
+                <div class="lesson-header__search">
+                    <input type="text" placeholder="ค้นหา">
+                </div>
+
+                <div class="lesson-header__profile">
+                    <div class="lesson-header__avatar"></div>
+                    <span>ชื่อนักเรียน</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                    <div class="lesson-profile-dropdown">
+                        <a href="#"><i class="fa-regular fa-user"></i> Profile</a>
+                        <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
+                        <a href="#"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="lesson-layout">
+
+            <!-- SIDEBAR -->
+            <aside class="lesson-sidebar">
+                <!--<h2 class="lesson-sidebar__title">Menu</h2>-->
+
+                <nav class="lesson-sidebar__menu">
+                    <a href="{% url 'home' %}" class="lesson-sidebar__item {% if request.resolver_match.url_name == 'home' %}is-active{% endif %}">
+                        <i class="fa-solid fa-house"></i>
+                        <span>หน้าแรก</span>
+                    </a>
+
+                    <a href="{% url 'course_description' %}" class="lesson-sidebar__item {% if request.resolver_match.url_name == 'course_description' %}is-active{% endif %}">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span>คำอธิบายรายวิชา</span>
+                    </a>
+
+                    <div class="lesson-sidebar__group">
+                        <button type="button" class="lesson-sidebar__item lesson-dropdown-toggle {% if request.resolver_match.url_name == 'lesson_detail' %}is-active{% endif %}"
+                            onclick="toggleLessonDropdown()">
+                            <span class="lesson-sidebar__item-left">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                                <span>บทเรียน</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down lesson-sidebar__arrow {% if request.resolver_match.url_name == 'lesson_detail' %}rotate{% endif %}" id="lessonDropdownArrow"></i>
+                        </button>
+
+                        <div class="lesson-sidebar__sublist {% if request.resolver_match.url_name == 'lesson_detail' %}show{% endif %}" id="lessonDropdownMenu">
+                            <a href="{% url 'lesson_detail' %}" class="lesson-sidebar__subitem {% if request.resolver_match.url_name == 'lesson_detail' %}is-active{% endif %}">
+                                <span class="lesson-sidebar__bullet">1</span>
+                                <span>บทที่ 1</span>
+                            </a>
+                            <a href="{% url 'lesson_detail' %}" class="lesson-sidebar__subitem">
+                                <span class="lesson-sidebar__bullet">2</span>
+                                <span>บทที่ 2</span>
+                            </a>
+                            <a href="{% url 'lesson_detail' %}" class="lesson-sidebar__subitem">
+                                <span class="lesson-sidebar__bullet">3</span>
+                                <span>บทที่ 3</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'exercise' %}" class="lesson-sidebar__item {% if request.resolver_match.url_name == 'exercise' %}is-active{% endif %}">
+                        <i class="fa-solid fa-pen"></i>
+                        <span>แบบฝึกหัด</span>
+                    </a>
+
+                    <a href="{% url 'pretest' %}" class="lesson-sidebar__item {% if request.resolver_match.url_name == 'pretest' %}is-active{% endif %}">
+                        <i class="fa-solid fa-file-pen"></i>
+                        <span>แบบทดสอบก่อนเรียน</span>
+                    </a>
+
+                    <a href="{% url 'posttest' %}" class="lesson-sidebar__item {% if request.resolver_match.url_name == 'posttest' %}is-active{% endif %}">
+                        <i class="fa-solid fa-file-circle-check"></i>
+                        <span>แบบทดสอบหลังเรียน</span>
+                    </a>
+
+                    <a href="{% url 'results' %}" class="lesson-sidebar__item {% if request.resolver_match.url_name == 'results' %}is-active{% endif %}">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                        <span>ผลการเรียน</span>
+                    </a>
+
+                    <a href="{% url 'teacher_dashboard' %}" class="lesson-sidebar__item {% if request.resolver_match.url_name == 'teacher_dashboard' %}is-active{% endif %}">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>สรุปภาพรวมครูผู้สอน</span>
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="lesson-content">
+                {% block content %}
+                {% endblock %}
+            </main>
+
+            <!-- RIGHT PANEL -->
+            <aside class="lesson-side-widget">
+                <div class="lesson-chatbot">
+                    <div class="lesson-chatbot__bubble">
+                        <div class="lesson-chatbot__title">Chatbot</div>
+                        <p>สวัสดีครับ!<br>มีอะไรให้ช่วยไหมครับ?</p>
+                    </div>
+
+                    <div class="lesson-chatbot__robot">
+                        <div class="robot-mini">
+                            <div class="robot-mini__head">
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <div class="robot-mini__body"></div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="lesson-footer">
+            <div class="lesson-footer__left">DB Learning Online</div>
+
+            <div class="site-footer__center">
+                <!--<i class="fa-solid fa-signal"></i>
+                <span>สถิติเข้าชม: 15,234</span>-->
+            </div>
+
+            <div class="lesson-footer__right">© Copyright 2026</div>
+        </footer>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,188 @@
+{% extends 'dblearn/lesson_base.html' %}
+{% load static %}
+
+{% block title %}แบบทดสอบหลังเรียน{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/test.css' %}">
+<style>
+  .quiz-topbar h2 { color: #1a3d7a; }
+  .quiz-timer { background: linear-gradient(180deg,#e8f4e8 0%,#d4edda 100%); color: #1e6b35; }
+  .quiz-submit-row { display: flex; justify-content: flex-end; margin-top: 18px; }
+  .quiz-btn--submit {
+    min-width: 180px; height: 58px; border: none; border-radius: 16px;
+    background: linear-gradient(180deg,#1a9e5c 0%,#158049 100%);
+    color: #fff; font-size: 18px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 8px 18px rgba(21,128,73,.28);
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    font-family: inherit;
+  }
+  .quiz-btn--submit:hover { transform: translateY(-2px); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="quiz-topbar">
+  <h2>แบบทดสอบหลังเรียน : บทที่ 1–3</h2>
+  <div class="quiz-timer" id="quizTimer">30:00 นาที</div>
+</div>
+
+<section class="quiz-question-card">
+  <h3>ข้อที่ <span id="currentQNum">1</span> : <span id="questionText">ระบบจัดการฐานข้อมูล (DBMS) คืออะไร?</span></h3>
+
+  <div class="quiz-options-grid" id="optionsGrid">
+    <label class="quiz-option">
+      <input type="radio" name="q" value="A">
+      <span class="quiz-option__radio"></span>
+      <span class="quiz-option__text">ซอฟต์แวร์สำหรับสร้างและจัดการฐานข้อมูล</span>
+    </label>
+    <label class="quiz-option">
+      <input type="radio" name="q" value="B">
+      <span class="quiz-option__radio"></span>
+      <span class="quiz-option__text">ภาษาโปรแกรมสำหรับเขียนเว็บไซต์</span>
+    </label>
+    <label class="quiz-option">
+      <input type="radio" name="q" value="C">
+      <span class="quiz-option__radio"></span>
+      <span class="quiz-option__text">ระบบปฏิบัติการของคอมพิวเตอร์</span>
+    </label>
+    <label class="quiz-option">
+      <input type="radio" name="q" value="D">
+      <span class="quiz-option__radio"></span>
+      <span class="quiz-option__text">เครือข่ายคอมพิวเตอร์ขนาดใหญ่</span>
+    </label>
+  </div>
+
+  <div class="quiz-nav-row">
+    <button class="quiz-btn quiz-btn--prev" id="prevBtn" onclick="changeQuestion(-1)">
+      <i class="fa-solid fa-chevron-left"></i> ก่อนหน้า
+    </button>
+    <div class="quiz-progress-text">ข้อ <span id="progressCurrent">1</span> จาก 20</div>
+    <button class="quiz-btn quiz-btn--next" id="nextBtn" onclick="changeQuestion(1)">
+      ถัดไป <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+
+  <div class="quiz-submit-row" id="submitRow" style="display:none;">
+    <button class="quiz-btn--submit" onclick="submitQuiz()">
+      <i class="fa-solid fa-paper-plane"></i> ส่งคำตอบ
+    </button>
+  </div>
+</section>
+
+<section class="quiz-number-panel">
+  <div class="quiz-number-grid" id="numberGrid"></div>
+</section>
+
+<!-- Result Modal -->
+<div id="resultModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:500; display:none; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:28px; padding:48px 56px; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.2); max-width:480px; width:90%;">
+    <div style="font-size:64px; margin-bottom:16px;">🎉</div>
+    <h2 style="font-size:32px; font-weight:800; color:#1a3d7a; margin-bottom:8px;">ส่งคำตอบสำเร็จ!</h2>
+    <p style="font-size:20px; color:#444; margin-bottom:24px;">คะแนนของคุณ</p>
+    <div style="font-size:72px; font-weight:800; color:#1a9e5c; line-height:1;" id="modalScore">18</div>
+    <div style="font-size:22px; color:#666; margin-bottom:32px;">จาก 20 ข้อ (90%)</div>
+    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+      <a href="{% url 'results' %}" style="min-width:160px; height:52px; border-radius:14px; background:linear-gradient(180deg,#234a9d 0%,#1d418f 100%); color:#fff; font-size:18px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none;">
+        <i class="fa-solid fa-chart-bar"></i> ดูผลการเรียน
+      </a>
+      <a href="{% url 'home' %}" style="min-width:160px; height:52px; border-radius:14px; background:linear-gradient(180deg,#e2e9f4 0%,#d0daea 100%); color:#26374c; font-size:18px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none;">
+        <i class="fa-solid fa-house"></i> หน้าแรก
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  { q: "ระบบจัดการฐานข้อมูล (DBMS) คืออะไร?", opts: ["ซอฟต์แวร์สำหรับสร้างและจัดการฐานข้อมูล","ภาษาโปรแกรมสำหรับเขียนเว็บไซต์","ระบบปฏิบัติการของคอมพิวเตอร์","เครือข่ายคอมพิวเตอร์ขนาดใหญ่"], ans: "A" },
+  { q: "Primary Key คืออะไร?", opts: ["คีย์ที่ระบุแถวในตารางได้ไม่ซ้ำกัน","คีย์ที่เชื่อมตารางสองตาราง","คีย์ที่ใช้เข้าสู่ระบบ","คีย์สำรองของตาราง"], ans: "A" },
+  { q: "Foreign Key ใช้ทำอะไร?", opts: ["ระบุค่าไม่ซ้ำในตาราง","เชื่อมความสัมพันธ์ระหว่างตาราง","เข้ารหัสข้อมูล","เรียงลำดับข้อมูล"], ans: "B" },
+  { q: "SQL ย่อมาจากอะไร?", opts: ["Structured Query Language","Simple Query List","System Query Logic","Standard Query Level"], ans: "A" },
+  { q: "คำสั่งใดใช้ดึงข้อมูลจากตาราง?", opts: ["INSERT","UPDATE","SELECT","DELETE"], ans: "C" },
+  { q: "คำสั่งใดใช้เพิ่มข้อมูลลงตาราง?", opts: ["ADD","INSERT INTO","CREATE","PUT"], ans: "B" },
+  { q: "คำสั่งใดใช้แก้ไขข้อมูลในตาราง?", opts: ["MODIFY","ALTER","UPDATE","CHANGE"], ans: "C" },
+  { q: "คำสั่งใดใช้ลบข้อมูลในตาราง?", opts: ["REMOVE","DROP","ERASE","DELETE"], ans: "D" },
+  { q: "Normalization คือกระบวนการใด?", opts: ["การสำรองข้อมูล","การลดความซ้ำซ้อนของข้อมูล","การเข้ารหัสข้อมูล","การบีบอัดข้อมูล"], ans: "B" },
+  { q: "ER Diagram ใช้สำหรับอะไร?", opts: ["แสดงโครงสร้างเครือข่าย","ออกแบบฐานข้อมูลเชิงแนวคิด","แสดงผังโปรแกรม","วาดกราฟสถิติ"], ans: "B" },
+  { q: "ข้อใดคือประเภทของความสัมพันธ์ใน ER Diagram?", opts: ["One-to-One, One-to-Many, Many-to-Many","High, Medium, Low","Public, Private, Protected","Input, Process, Output"], ans: "A" },
+  { q: "คำสั่ง WHERE ใช้ทำอะไรใน SQL?", opts: ["เรียงลำดับผลลัพธ์","กำหนดเงื่อนไขในการกรองข้อมูล","จัดกลุ่มข้อมูล","เชื่อมตาราง"], ans: "B" },
+  { q: "คำสั่ง ORDER BY ใช้ทำอะไร?", opts: ["เรียงลำดับข้อมูล","กรองข้อมูล","นับจำนวน","หาค่าเฉลี่ย"], ans: "A" },
+  { q: "คำสั่ง GROUP BY ใช้ทำอะไร?", opts: ["เรียงลำดับข้อมูล","จัดกลุ่มข้อมูล","กรองข้อมูล","ลบข้อมูล"], ans: "B" },
+  { q: "คำสั่ง JOIN ใช้ทำอะไร?", opts: ["บวกตัวเลข","รวมข้อมูลจากหลายตาราง","แบ่งตาราง","ลบตาราง"], ans: "B" },
+  { q: "INDEX ในฐานข้อมูลช่วยอะไร?", opts: ["เพิ่มขนาดตาราง","เร่งความเร็วในการค้นหา","ลดจำนวนคอลัมน์","เข้ารหัสข้อมูล"], ans: "B" },
+  { q: "Transaction ในฐานข้อมูลหมายถึงอะไร?", opts: ["การโอนเงินเท่านั้น","ชุดของคำสั่งที่ทำงานเป็นหน่วยเดียว","การสำรองข้อมูล","การลบตาราง"], ans: "B" },
+  { q: "ROLLBACK ใช้ทำอะไร?", opts: ["บันทึกการเปลี่ยนแปลง","ยกเลิกการเปลี่ยนแปลง","สร้างตารางใหม่","ลบข้อมูล"], ans: "B" },
+  { q: "COMMIT ใช้ทำอะไร?", opts: ["ยกเลิกการเปลี่ยนแปลง","บันทึกการเปลี่ยนแปลงถาวร","เปิดตาราง","ลบตาราง"], ans: "B" },
+  { q: "ข้อใดคือ RDBMS ที่นิยมใช้?", opts: ["Photoshop","MySQL, PostgreSQL, Oracle","MS Word","Notepad"], ans: "B" },
+]
+
+let current = 0
+const answers = new Array(20).fill(null)
+
+function buildNumberGrid() {
+  const grid = document.getElementById('numberGrid')
+  grid.innerHTML = ''
+  questions.forEach((_, i) => {
+    const btn = document.createElement('button')
+    btn.className = 'quiz-number' + (answers[i] ? ' quiz-number--done' : '') + (i === current ? ' quiz-number--current' : '')
+    btn.textContent = i + 1
+    btn.onclick = () => goTo(i)
+    grid.appendChild(btn)
+  })
+}
+
+function renderQuestion() {
+  const q = questions[current]
+  document.getElementById('currentQNum').textContent = current + 1
+  document.getElementById('progressCurrent').textContent = current + 1
+  document.getElementById('questionText').textContent = q.q
+  const grid = document.getElementById('optionsGrid')
+  grid.innerHTML = ''
+  q.opts.forEach((opt, i) => {
+    const val = ['A','B','C','D'][i]
+    const selected = answers[current] === val
+    const label = document.createElement('label')
+    label.className = 'quiz-option' + (selected ? ' quiz-option--selected' : '')
+    label.innerHTML = `<input type="radio" name="q" value="${val}" ${selected ? 'checked' : ''}>
+      <span class="quiz-option__radio"></span>
+      <span class="quiz-option__text">${opt}</span>`
+    label.querySelector('input').addEventListener('change', () => {
+      answers[current] = val
+      document.querySelectorAll('#optionsGrid .quiz-option').forEach(l => l.classList.remove('quiz-option--selected'))
+      label.classList.add('quiz-option--selected')
+      buildNumberGrid()
+      checkSubmit()
+    })
+    grid.appendChild(label)
+  })
+  document.getElementById('prevBtn').disabled = current === 0
+  document.getElementById('nextBtn').style.display = current === questions.length - 1 ? 'none' : ''
+  document.getElementById('submitRow').style.display = current === questions.length - 1 ? 'flex' : 'none'
+  buildNumberGrid()
+}
+
+function goTo(i) { current = i; renderQuestion() }
+function changeQuestion(dir) { goTo(Math.max(0, Math.min(questions.length - 1, current + dir))) }
+function checkSubmit() {}
+
+function submitQuiz() {
+  const score = answers.filter((a, i) => a === questions[i].ans).length
+  document.getElementById('modalScore').textContent = score
+  document.getElementById('resultModal').style.display = 'flex'
+}
+
+/* Timer */
+let timeLeft = 30 * 60
+const timerEl = document.getElementById('quizTimer')
+const timerInterval = setInterval(() => {
+  timeLeft--
+  const m = String(Math.floor(timeLeft / 60)).padStart(2,'0')
+  const s = String(timeLeft % 60).padStart(2,'0')
+  timerEl.textContent = m + ':' + s + ' นาที'
+  if (timeLeft <= 0) { clearInterval(timerInterval); submitQuiz() }
+}, 1000)
+
+renderQuestion()
+</script>
+{% endblock %}

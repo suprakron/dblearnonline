@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}
+        DB Learning Online
+      {% endblock %}
+    </title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    {% block extra_css %}
+
+    {% endblock %}
+  </head>
+  <body>
+    <div class="layout-shell">
+      <!-- HEADER -->
+      <header class="site-header">
+        <div class="brand">
+          <div class="brand__logo">
+            <img src="{% static 'img/logodatabase.png' %}" alt="DBLearn Logo">
+          </div>
+          <h1 class="brand__title">DBLearn</h1>
+        </div>
+
+        <div class="site-header__actions">
+          <div class="site-search">
+            <input type="text" placeholder="ค้นหา...">
+            <button type="button"><i class="fa-solid fa-magnifying-glass"></i></button>
+          </div>
+          <a href="{% url 'login' %}" class="site-login-btn">
+            <span>เข้าสู่ระบบ</span>
+            <i class="fa-regular fa-user"></i>
+          </a>
+          <button type="button" class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- SIDEBAR BACKDROP -->
+      <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+      <!-- MAIN -->
+      <div class="site-main">
+        <!-- SIDEBAR -->
+        <aside class="lesson-sidebar">
+          <!-- <h2 class="lesson-sidebar__title">Menu</h2> -->
+
+          <nav class="lesson-sidebar__menu">
+            <a href="{% url 'home' %}" class="lesson-sidebar__item {% if request.resolver_match.url_name == 'home' %}is-active{% endif %}">
+              <i class="fa-solid fa-house"></i>
+              <span>หน้าแรก</span>
+            </a>
+
+            <a href="{% url 'course_description' %}" class="lesson-sidebar__item {% if request.resolver_match.url_name == 'course_description' %}is-active{% endif %}">
+              <i class="fa-solid fa-book-open"></i>
+              <span>คำอธิบายรายวิชา</span>
+            </a>
+
+            <div class="lesson-sidebar__group">
+              <button type="button" class="lesson-sidebar__item lesson-dropdown-toggle {% if request.resolver_match.url_name == 'lesson_detail' %}is-active{% endif %}" onclick="toggleLessonDropdown()">
+                <span class="lesson-sidebar__item-left">
+                  <i class="fa-solid fa-graduation-cap"></i>
+                  <span>บทเรียน</span>
+                </span>
+                <i class="fa-solid fa-chevron-down lesson-sidebar__arrow {% if request.resolver_match.url_name == 'lesson_detail' %}rotate{% endif %}" id="lessonDropdownArrow"></i>
+              </button>
+
+              <div class="lesson-sidebar__sublist {% if request.resolver_match.url_name == 'lesson_detail' %}show{% endif %}" id="lessonDropdownMenu">
+                <a href="{% url 'lesson_detail' %}" class="lesson-sidebar__subitem {% if request.resolver_match.url_name == 'lesson_detail' %}is-active{% endif %}">
+                  <span class="lesson-sidebar__bullet">1</span>
+                  <span>บทที่ 1</span>
+                </a>
+                <a href="{% url 'lesson_detail' %}" class="lesson-sidebar__subitem">
+                  <span class="lesson-sidebar__bullet">2</span>
+                  <span>บทที่ 2</span>
+                </a>
+                <a href="{% url 'lesson_detail' %}" class="lesson-sidebar__subitem">
+                  <span class="lesson-sidebar__bullet">3</span>
+                  <span>บทที่ 3</span>
+                </a>
+              </div>
+            </div>
+
+            <a href="{% url 'exercise' %}" class="lesson-sidebar__item {% if request.resolver_match.url_name == 'exercise' %}is-active{% endif %}">
+              <i class="fa-solid fa-pen"></i>
+              <span>แบบฝึกหัด</span>
+            </a>
+
+            <a href="{% url 'pretest' %}" class="lesson-sidebar__item {% if request.resolver_match.url_name == 'pretest' %}is-active{% endif %}">
+              <i class="fa-solid fa-file-pen"></i>
+              <span>แบบทดสอบก่อนเรียน</span>
+            </a>
+
+            <a href="{% url 'posttest' %}" class="lesson-sidebar__item {% if request.resolver_match.url_name == 'posttest' %}is-active{% endif %}">
+              <i class="fa-solid fa-file-circle-check"></i>
+              <span>แบบทดสอบหลังเรียน</span>
+            </a>
+
+            <a href="{% url 'results' %}" class="lesson-sidebar__item {% if request.resolver_match.url_name == 'results' %}is-active{% endif %}">
+              <i class="fa-solid fa-clipboard-list"></i>
+              <span>ผลการเรียน</span>
+            </a>
+
+            <a href="{% url 'teacher_dashboard' %}" class="lesson-sidebar__item {% if request.resolver_match.url_name == 'teacher_dashboard' %}is-active{% endif %}">
+              <i class="fa-solid fa-chart-line"></i>
+              <span>สรุปภาพรวมครูผู้สอน</span>
+            </a>
+          </nav>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="site-content">
+          {% block hero %}{% endblock %}
+          {% block content %}
+
+          {% endblock %}
+        </main>
+
+      </div>
+
+      <!-- CHATBOT FLOATING -->
+      <button type="button" id="chatToggleBtn" class="chat-floating-btn">🤖</button>
+
+      <div class="lesson-chat-window" id="lessonChatWindow">
+        <div class="lesson-chat-window__header">
+          <div class="lesson-chat-window__info">
+            <div class="lesson-chat-window__avatar">🤖</div>
+            <div class="lesson-chat-window__title-wrap">
+              <h3>DBLearn Assistant</h3>
+            </div>
+          </div>
+          <button type="button" class="lesson-chat-window__close" id="chatbotCloseBtn">×</button>
+        </div>
+        <div class="lesson-chat-window__body" id="chatMessages">
+          <div class="chat-message chat-message--bot">
+            <div class="chat-message__bubble">สวัสดีครับ! มีอะไรให้ช่วยไหมครับ? 😊</div>
+          </div>
+        </div>
+        <form class="lesson-chat-window__input" id="chatForm">
+          <div class="chat-input-row">
+            <input type="text" id="chatInput" placeholder="พิมพ์ข้อความ..." autocomplete="off" />
+            <button type="submit" class="chat-send-btn" aria-label="send"><span class="send-icon">➤</span></button>
+          </div>
+        </form>
+      </div>
+
+      <!-- FOOTER -->
+      <footer class="site-footer">
+        <div class="site-footer__left">DB Learning Online</div>
+
+        <div class="site-footer__center">
+          <i class="fa-solid fa-signal"></i>
+          <span>สถิติเข้าชม: 15,234</span>
+        </div>
+
+        <div class="site-footer__right">© Copyright 2026</div>
+      </footer>
+    </div>
+
+    <script>
+      /* Mobile sidebar */
+      ;(function () {
+        var btn = document.getElementById('mobileMenuBtn')
+        var sidebar = document.querySelector('.lesson-sidebar')
+        var backdrop = document.getElementById('sidebarBackdrop')
+
+        function openSidebar() {
+          sidebar.classList.add('mobile-open')
+          backdrop.classList.add('active')
+          document.body.style.overflow = 'hidden'
+        }
+        function closeSidebar() {
+          sidebar.classList.remove('mobile-open')
+          backdrop.classList.remove('active')
+          document.body.style.overflow = ''
+        }
+        if (btn) btn.addEventListener('click', openSidebar)
+        if (backdrop) backdrop.addEventListener('click', closeSidebar)
+      })()
+
+      /* Dropdown */
+      function toggleLessonDropdown() {
+        var menu = document.getElementById('lessonDropdownMenu')
+        var arrow = document.getElementById('lessonDropdownArrow')
+        menu.classList.toggle('show')
+        arrow.classList.toggle('rotate')
+      }
+
+      /* Chatbot */
+      document.addEventListener('DOMContentLoaded', function () {
+        var chatWindow = document.getElementById('lessonChatWindow')
+        var toggleBtn = document.getElementById('chatToggleBtn')
+        var closeBtn = document.getElementById('chatbotCloseBtn')
+        var chatForm = document.getElementById('chatForm')
+        var chatInput = document.getElementById('chatInput')
+        var chatMessages = document.getElementById('chatMessages')
+
+        function openChat() {
+          chatWindow.classList.remove('hidden')
+          chatWindow.classList.add('show')
+          toggleBtn.classList.add('hidden')
+          setTimeout(function () { chatInput.focus() }, 200)
+        }
+        function closeChat() {
+          chatWindow.classList.add('hidden')
+          chatWindow.classList.remove('show')
+          toggleBtn.classList.remove('hidden')
+        }
+
+        toggleBtn.addEventListener('click', openChat)
+        closeBtn.addEventListener('click', closeChat)
+
+        function getCookie(name) {
+          var cookieValue = null
+          if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';')
+            for (var i = 0; i < cookies.length; i++) {
+              var cookie = cookies[i].trim()
+              if (cookie.substring(0, name.length + 1) === name + '=') {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+                break
+              }
+            }
+          }
+          return cookieValue
+        }
+
+        function addMessage(text, sender) {
+          var div = document.createElement('div')
+          div.className = 'chat-message chat-message--' + sender
+          var bubble = document.createElement('div')
+          bubble.className = 'chat-message__bubble'
+          bubble.innerHTML = text
+          div.appendChild(bubble)
+          chatMessages.appendChild(div)
+          chatMessages.scrollTop = chatMessages.scrollHeight
+        }
+
+        function addTyping() {
+          var typing = document.createElement('div')
+          typing.className = 'chat-message chat-message--bot'
+          typing.id = 'typingMessage'
+          typing.innerHTML = '<div class="chat-message__bubble"><span class="typing-indicator"><span></span><span></span><span></span></span></div>'
+          chatMessages.appendChild(typing)
+          chatMessages.scrollTop = chatMessages.scrollHeight
+          return typing
+        }
+
+        chatForm.addEventListener('submit', function (e) {
+          e.preventDefault()
+          var message = chatInput.value.trim()
+          if (!message) return
+          addMessage(message, 'user')
+          chatInput.value = ''
+          var typing = addTyping()
+          fetch('/chatbot/mock-reply/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+            body: JSON.stringify({ message: message })
+          })
+          .then(function (res) { return res.json() })
+          .then(function (data) { typing.remove(); addMessage(data.reply, 'bot') })
+          .catch(function () { typing.remove(); addMessage('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'bot') })
+        })
+      })
+    </script>
+
+    {% block extra_js %}
+
+    {% endblock %}
+  </body>
+</html>

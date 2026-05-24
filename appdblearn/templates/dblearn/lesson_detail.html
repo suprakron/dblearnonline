@@ -1,0 +1,267 @@
+{% extends 'dblearn/lesson_base.html' %}
+{% load static %}
+
+{% block title %}Ep.7: การสืบค้นข้อมูลพื้นฐาน{% endblock %}
+
+{% block extra_css %}
+<style>
+  .lv-page { display: flex; flex-direction: column; gap: 20px; }
+
+  /* Episode title */
+  .lv-title { font-size: 22px; font-weight: 800; color: #1a3d7a; }
+
+  /* ── Video player ── */
+  .lv-player {
+    width: 100%; aspect-ratio: 16/9; border-radius: 16px; overflow: hidden;
+    background: #0d1b3e; position: relative; box-shadow: 0 8px 28px rgba(0,0,0,.25);
+  }
+  .lv-player__screen {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #0d1b3e 0%, #1a3070 55%, #1d3e82 100%);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .lv-player__ep-label {
+    position: absolute; top: 22px; left: 28px;
+    font-size: 20px; font-weight: 800; color: #fff;
+  }
+  .lv-player__sql-badge {
+    position: absolute; top: 22px; right: 28px;
+    display: flex; align-items: center; gap: 7px;
+    font-size: 17px; font-weight: 800; color: #68c8ff;
+  }
+  .lv-player__code {
+    background: rgba(15,20,40,.85); border-radius: 12px;
+    padding: 22px 32px; font-family: 'Courier New', monospace;
+    font-size: 17px; line-height: 2; color: #cdd6f4;
+    box-shadow: 0 8px 32px rgba(0,0,0,.5); margin-right: 150px;
+  }
+  .lv-player__code .kw  { color: #89b4fa; }
+  .lv-player__code .tbl { color: #a6e3a1; }
+  .lv-player__code .cl  { color: #f9e2af; }
+  .lv-player__teacher {
+    position: absolute; right: 28px; bottom: 52px;
+    width: 110px; height: 150px;
+    background: linear-gradient(180deg, #c8a882 0%, #b8956e 100%);
+    border-radius: 12px 12px 0 0;
+    display: flex; align-items: flex-end; justify-content: center;
+    overflow: hidden;
+  }
+  .lv-player__teacher-name {
+    position: absolute; right: 20px; bottom: 46px;
+    font-size: 12px; color: #ccc; text-align: center; width: 130px;
+    line-height: 1.5;
+  }
+  /* play button overlay */
+  .lv-player__play-overlay {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .lv-player__play-btn {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: rgba(255,255,255,.18); border: 3px solid rgba(255,255,255,.6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; color: #fff; backdrop-filter: blur(4px);
+    transition: background .2s, transform .2s;
+  }
+  .lv-player__play-btn:hover { background: rgba(255,255,255,.28); transform: scale(1.08); }
+  /* controls bar */
+  .lv-player__controls {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(0deg, rgba(0,0,0,.75) 0%, transparent 100%);
+    padding: 10px 18px; height: 50px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .lv-ctrl-btn { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; padding: 0 2px; }
+  .lv-ctrl-time { color: #fff; font-size: 13px; white-space: nowrap; }
+  .lv-ctrl-bar {
+    flex: 1; height: 4px; background: rgba(255,255,255,.3); border-radius: 2px; position: relative; cursor: pointer;
+  }
+  .lv-ctrl-bar__fill { position: absolute; left: 0; top: 0; height: 100%; width: 45%; background: #fff; border-radius: 2px; }
+  .lv-ctrl-bar__thumb {
+    position: absolute; top: 50%; left: 45%; transform: translate(-50%,-50%);
+    width: 12px; height: 12px; background: #fff; border-radius: 50%;
+  }
+  .lv-ctrl-quality {
+    background: rgba(255,255,255,.15); border: none; border-radius: 6px;
+    color: #fff; font-size: 12px; padding: 3px 10px; font-family: inherit; cursor: pointer;
+  }
+
+  /* ── Tabs ── */
+  .lv-tabs { display: flex; gap: 0; border-bottom: 2px solid #e4ecf7; margin-top: 4px; }
+  .lv-tab {
+    padding: 12px 26px; font-size: 15px; font-weight: 600; color: #666;
+    cursor: pointer; border: none; border-bottom: 3px solid transparent;
+    margin-bottom: -2px; background: none; font-family: inherit;
+    transition: color .2s, border-color .2s;
+  }
+  .lv-tab.active { color: #1a3d7a; border-bottom-color: #1a3d7a; }
+  .lv-tab:hover:not(.active) { color: #3a8fea; }
+  .lv-tab-panel { display: none; padding-top: 20px; }
+  .lv-tab-panel.active { display: block; }
+
+  /* Download button */
+  .lv-dl-btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 10px 22px; border-radius: 12px;
+    background: linear-gradient(90deg, #6a35c2 0%, #8b45d6 100%);
+    color: #fff; font-size: 14px; font-weight: 700;
+    border: none; cursor: pointer; font-family: inherit;
+    box-shadow: 0 4px 12px rgba(106,53,194,.28);
+  }
+  .lv-file-name { font-size: 15px; color: #555; }
+  .lv-description { color: #444; font-size: 15px; line-height: 1.85; margin-top: 14px; }
+
+  /* ── Comments ── */
+  .lv-comments { display: flex; flex-direction: column; gap: 0; }
+  .lv-comments__title { font-size: 18px; font-weight: 700; color: #1a3d7a; margin-bottom: 16px; }
+  .lv-comment-input { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 20px; }
+  .lv-avatar {
+    width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; background: #dbeaff;
+  }
+  .lv-avatar--sm { width: 40px; height: 40px; font-size: 18px; }
+  .lv-textarea {
+    flex: 1; border: 1.5px solid #cddaef; border-radius: 12px;
+    padding: 12px 16px; font-size: 14px; color: #333;
+    resize: none; height: 62px; font-family: inherit; outline: none;
+    transition: border-color .2s;
+  }
+  .lv-textarea:focus { border-color: #3a8fea; }
+  .lv-send-btn {
+    align-self: flex-end; padding: 10px 20px; border-radius: 10px;
+    background: linear-gradient(90deg, #6a35c2, #8b45d6);
+    color: #fff; font-size: 14px; font-weight: 700;
+    border: none; cursor: pointer; font-family: inherit; white-space: nowrap;
+  }
+  .lv-comment-list { display: flex; flex-direction: column; gap: 14px; }
+  .lv-comment { display: flex; gap: 12px; }
+  .lv-comment__body strong { font-size: 14px; color: #1a3d7a; }
+  .lv-comment__body p { font-size: 14px; color: #555; margin-top: 3px; line-height: 1.5; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="lv-page">
+
+  <h2 class="lv-title">Ep.7: การสืบค้นข้อมูลพื้นฐาน (SELECT and Filters)</h2>
+
+  <!-- Video player -->
+  <div class="lv-player">
+    <div class="lv-player__screen">
+      <span class="lv-player__ep-label">Ep.7: การสืบค้นข้อมูลพื้นฐาน</span>
+      <span class="lv-player__sql-badge"><i class="fa-solid fa-database"></i> SQL</span>
+
+      <div class="lv-player__code">
+        <span class="kw">SELECT</span> *<br>
+        <span class="tbl">FROM</span> students<br>
+        <span class="cl">WHERE</span> grade &gt;= '3.00';
+      </div>
+
+      <div class="lv-player__teacher">
+        <div style="width:60px;height:60px;border-radius:50%;background:#8b6e50;margin:0 auto 4px;"></div>
+      </div>
+      <div class="lv-player__teacher-name">teacher<br>อ.สมพร</div>
+
+      <div class="lv-player__play-overlay">
+        <div class="lv-player__play-btn"><i class="fa-solid fa-play"></i></div>
+      </div>
+    </div>
+
+    <div class="lv-player__controls">
+      <button class="lv-ctrl-btn"><i class="fa-solid fa-play"></i></button>
+      <button class="lv-ctrl-btn"><i class="fa-solid fa-volume-high"></i></button>
+      <span class="lv-ctrl-time">15:42 / 35:10</span>
+      <div class="lv-ctrl-bar">
+        <div class="lv-ctrl-bar__fill"></div>
+        <div class="lv-ctrl-bar__thumb"></div>
+      </div>
+      <button class="lv-ctrl-btn"><i class="fa-solid fa-expand"></i></button>
+      <button class="lv-ctrl-quality">1080p</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div>
+    <div class="lv-tabs">
+      <button class="lv-tab active" onclick="switchTab('content', this)">เนื้อหาบทเรียน</button>
+      <button class="lv-tab" onclick="switchTab('docs', this)">เอกสารประกอบ</button>
+      <button class="lv-tab" onclick="switchTab('quiz', this)">แบบทดสอบ</button>
+    </div>
+
+    <!-- Tab: เนื้อหาบทเรียน -->
+    <div id="tab-content" class="lv-tab-panel active">
+      <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <button class="lv-dl-btn"><i class="fa-solid fa-download"></i> ดาวน์โหลดเอกสาร</button>
+        <span class="lv-file-name">SQL basics.pdf</span>
+      </div>
+      <p class="lv-description">
+        ในบทเรียนนี้จะเรียนรู้คำสั่ง <strong>SELECT</strong> สำหรับการสืบค้นข้อมูลจากฐานข้อมูล
+        ครอบคลุมการกรองข้อมูลด้วย <strong>WHERE</strong> การเรียงลำดับด้วย <strong>ORDER BY</strong>
+        และการจำกัดจำนวนผลลัพธ์ด้วย <strong>LIMIT</strong> พร้อมตัวอย่างการใช้งานจริง
+      </p>
+    </div>
+
+    <!-- Tab: เอกสารประกอบ -->
+    <div id="tab-docs" class="lv-tab-panel">
+      <ul style="padding-left:20px; color:#444; line-height:2.2; font-size:15px;">
+        <li><i class="fa-regular fa-file-pdf" style="color:#e74c3c; margin-right:8px;"></i>SQL basics.pdf</li>
+        <li><i class="fa-regular fa-file-pdf" style="color:#e74c3c; margin-right:8px;"></i>SELECT_Cheatsheet.pdf</li>
+        <li><i class="fa-regular fa-file-pdf" style="color:#e74c3c; margin-right:8px;"></i>WHERE_Exercises.pdf</li>
+      </ul>
+    </div>
+
+    <!-- Tab: แบบทดสอบ -->
+    <div id="tab-quiz" class="lv-tab-panel">
+      <p style="color:#555; font-size:15px; margin-bottom:16px;">แบบทดสอบประจำ Ep.7 มี 5 ข้อ ทดสอบความเข้าใจเรื่อง SELECT และ WHERE clause</p>
+      <a href="{% url 'pretest' %}" style="display:inline-flex; align-items:center; gap:8px; padding:12px 24px; border-radius:12px; background:linear-gradient(90deg,#1a9e5c,#158049); color:#fff; font-size:15px; font-weight:700; text-decoration:none; box-shadow:0 4px 12px rgba(21,128,73,.28);">
+        <i class="fa-solid fa-file-pen"></i> เริ่มทำแบบทดสอบ
+      </a>
+    </div>
+  </div>
+
+  <!-- Comments -->
+  <div class="lv-comments">
+    <h3 class="lv-comments__title">ความคิดเห็นและคำถาม</h3>
+    <div class="lv-comment-input">
+      <div class="lv-avatar">👤</div>
+      <textarea class="lv-textarea" placeholder="เขียนความคิดเห็นหรือตั้งคำถามที่นี่..."></textarea>
+      <button class="lv-send-btn">ส่งความคิดเห็น</button>
+    </div>
+    <div class="lv-comment-list">
+      <div class="lv-comment">
+        <div class="lv-avatar lv-avatar--sm">👩</div>
+        <div class="lv-comment__body">
+          <strong>ประวีณา:</strong>
+          <p>อาจารย์สอนเข้าใจง่ายมากค่ะ!</p>
+        </div>
+      </div>
+      <div class="lv-comment">
+        <div class="lv-avatar lv-avatar--sm">👨</div>
+        <div class="lv-comment__body">
+          <strong>สมเกียรติ:</strong>
+          <p>มีข้อสงสัยตรง WHERE clause ครับ ถ้าต้องการหาช่วงคะแนนต้องใช้ BETWEEN หรือเปล่า?</p>
+        </div>
+      </div>
+      <div class="lv-comment">
+        <div class="lv-avatar lv-avatar--sm">👩</div>
+        <div class="lv-comment__body">
+          <strong>วรรณภา:</strong>
+          <p>อยากได้ตัวอย่าง SQL เพิ่มเติมค่ะ โดยเฉพาะการใช้ ORDER BY</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.lv-tab-panel').forEach(el => el.classList.remove('active'))
+  document.querySelectorAll('.lv-tab').forEach(el => el.classList.remove('active'))
+  document.getElementById('tab-' + tabId).classList.add('active')
+  btn.classList.add('active')
+}
+</script>
+{% endblock %}

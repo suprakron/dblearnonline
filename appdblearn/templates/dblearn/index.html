@@ -1,0 +1,96 @@
+{% extends 'dblearn/base.html' %}
+
+{% block title %}หน้าแรก | DB Learning Online{% endblock %}
+
+{% block content %}
+<!-- HERO BANNER -->
+<section class="hero-banner">
+  <div class="hero-banner__content">
+    <div class="hero-banner__text">
+      <h2>เริ่มต้นการเรียนรู้ใหม่กับ<br>DB Learning Online</h2>
+    </div>
+
+    <div class="hero-banner__visual">
+      <div class="hero-illustration">
+        <div class="hero-book"></div>
+        <div class="hero-screen">
+          <div class="hero-screen__bar"></div>
+          <div class="hero-screen__body"></div>
+        </div>
+        <div class="hero-person hero-person--left"></div>
+        <div class="hero-person hero-person--center"></div>
+        <div class="hero-person hero-person--right"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-banner__dots">
+    <span class="hero-banner__dot is-active"></span>
+    <span class="hero-banner__dot"></span>
+    <span class="hero-banner__dot"></span>
+  </div>
+</section>
+
+<!-- RECOMMENDED -->
+<section class="content-section">
+  <h3 class="section-title">แนะนำบทเรียน</h3>
+
+  <div class="course-card-grid">
+    <article class="course-card">
+      <div class="course-card__image course-card__image--one">
+        <span class="course-card__badge">คอร์สแนะนำ</span>
+      </div>
+      <div class="course-card__body">
+        <h4>คอร์สแนะนำ</h4>
+        <p>คอร์สแนะนำด้านเทคโนโลยีการศึกษาและบทเรียนล่าสุด</p>
+      </div>
+    </article>
+
+    <article class="course-card">
+      <div class="course-card__image course-card__image--two">
+        <span class="course-card__badge">คอร์สใหม่ล่าสุด</span>
+      </div>
+      <div class="course-card__body">
+        <h4>คอร์สใหม่ล่าสุด</h4>
+        <p>คอร์สแนะนำด้านเทคโนโลยีการศึกษาและบทเรียนล่าสุด</p>
+      </div>
+    </article>
+
+    <article class="course-card">
+      <div class="course-card__image course-card__image--three">
+        <span class="course-card__badge">วิชาที่น่าสนใจ</span>
+      </div>
+      <div class="course-card__body">
+        <h4>วิชาที่น่าสนใจ</h4>
+        <p>คอร์สแนะนำด้านเทคโนโลยีการศึกษาและบทเรียนยอดฮิต</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- TEACHER -->
+<section class="content-section">
+  <h3 class="section-title">ข้อมูลครูผู้สอน</h3>
+
+  <div class="teacher-card">
+    <div class="teacher-card__avatar-wrap">
+      <!--<div class="teacher-card__avatar"></div>-->
+      <img src="/static/img/Jarupak2.jpg" alt="Teacher" class="teacher-card__avatar">
+    </div>
+
+    <div class="teacher-card__info">
+      <h4>นางสาวจารุพักตร์ ศรีวารี (ครูหญิง)</h4>
+      <p>
+        ครูผู้สอนประจำรายวิชาโปรแกรมฐานข้อมูล<br>
+        ประสบการณ์การสอนกว่า 10 ปี
+      </p>
+
+      <div class="teacher-card__social">
+        <a href="#"><i class="fa-solid fa-envelope"></i></a>
+        <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
