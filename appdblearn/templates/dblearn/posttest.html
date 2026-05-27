@@ -1,59 +1,27 @@
-{% extends 'dblearn/lesson_base.html' %}
+{% extends 'dblearn/exam_base.html' %}
 {% load static %}
 
-{% block title %}แบบทดสอบหลังเรียน{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/test.css' %}">
-<style>
-  .quiz-topbar h2 { color: #1a3d7a; }
-  .quiz-timer { background: linear-gradient(180deg,#e8f4e8 0%,#d4edda 100%); color: #1e6b35; }
-  .quiz-submit-row { display: flex; justify-content: flex-end; margin-top: 18px; }
-  .quiz-btn--submit {
-    min-width: 180px; height: 58px; border: none; border-radius: 16px;
-    background: linear-gradient(180deg,#1a9e5c 0%,#158049 100%);
-    color: #fff; font-size: 18px; font-weight: 700; cursor: pointer;
-    box-shadow: 0 8px 18px rgba(21,128,73,.28);
-    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-    font-family: inherit;
-  }
-  .quiz-btn--submit:hover { transform: translateY(-2px); }
-</style>
-{% endblock %}
+{% block title %}แบบทดสอบหลังเรียน – DBLearn{% endblock %}
+{% block exam_title %}แบบทดสอบหลังเรียน{% endblock %}
+{% block exam_subtitle %}บทที่ 1–10 · 20 ข้อ · เวลา 30 นาที · วิชาโปรแกรมฐานข้อมูล{% endblock %}
+{% block timer_init %}30:00{% endblock %}
+{% block total_questions %}20{% endblock %}
 
 {% block content %}
-<div class="quiz-topbar">
-  <h2>แบบทดสอบหลังเรียน : บทที่ 1–3</h2>
-  <div class="quiz-timer" id="quizTimer">30:00 นาที</div>
-</div>
 
+<!-- Question card -->
 <section class="quiz-question-card">
-  <h3>ข้อที่ <span id="currentQNum">1</span> : <span id="questionText">ระบบจัดการฐานข้อมูล (DBMS) คืออะไร?</span></h3>
-
-  <div class="quiz-options-grid" id="optionsGrid">
-    <label class="quiz-option">
-      <input type="radio" name="q" value="A">
-      <span class="quiz-option__radio"></span>
-      <span class="quiz-option__text">ซอฟต์แวร์สำหรับสร้างและจัดการฐานข้อมูล</span>
-    </label>
-    <label class="quiz-option">
-      <input type="radio" name="q" value="B">
-      <span class="quiz-option__radio"></span>
-      <span class="quiz-option__text">ภาษาโปรแกรมสำหรับเขียนเว็บไซต์</span>
-    </label>
-    <label class="quiz-option">
-      <input type="radio" name="q" value="C">
-      <span class="quiz-option__radio"></span>
-      <span class="quiz-option__text">ระบบปฏิบัติการของคอมพิวเตอร์</span>
-    </label>
-    <label class="quiz-option">
-      <input type="radio" name="q" value="D">
-      <span class="quiz-option__radio"></span>
-      <span class="quiz-option__text">เครือข่ายคอมพิวเตอร์ขนาดใหญ่</span>
-    </label>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+    <span style="font-size:12px;background:#d4edda;color:#155724;padding:3px 10px;border-radius:20px;font-weight:700;">
+      ข้อที่ <span id="currentQNum">1</span> / 20
+    </span>
+    <span style="font-size:12px;color:#888;">แบบทดสอบหลังเรียน</span>
   </div>
+  <h3 id="questionText" style="font-size:17px;font-weight:700;color:#1a3d7a;line-height:1.5;margin-bottom:20px;"></h3>
 
-  <div class="quiz-nav-row">
+  <div class="quiz-options-grid" id="optionsGrid"></div>
+
+  <div class="quiz-nav-row" style="margin-top:24px;">
     <button class="quiz-btn quiz-btn--prev" id="prevBtn" onclick="changeQuestion(-1)">
       <i class="fa-solid fa-chevron-left"></i> ก่อนหน้า
     </button>
@@ -63,30 +31,29 @@
     </button>
   </div>
 
-  <div class="quiz-submit-row" id="submitRow" style="display:none;">
-    <button class="quiz-btn--submit" onclick="submitQuiz()">
+  <div id="submitRow" style="display:none;justify-content:flex-end;margin-top:18px;">
+    <button onclick="submitQuiz()" style="min-width:200px;height:56px;border:none;border-radius:16px;background:linear-gradient(180deg,#1a9e5c,#158049);color:#fff;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 8px 18px rgba(21,128,73,.25);">
       <i class="fa-solid fa-paper-plane"></i> ส่งคำตอบ
     </button>
   </div>
 </section>
 
-<section class="quiz-number-panel">
-  <div class="quiz-number-grid" id="numberGrid"></div>
-</section>
-
 <!-- Result Modal -->
-<div id="resultModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:500; display:none; align-items:center; justify-content:center;">
-  <div style="background:#fff; border-radius:28px; padding:48px 56px; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.2); max-width:480px; width:90%;">
-    <div style="font-size:64px; margin-bottom:16px;">🎉</div>
-    <h2 style="font-size:32px; font-weight:800; color:#1a3d7a; margin-bottom:8px;">ส่งคำตอบสำเร็จ!</h2>
-    <p style="font-size:20px; color:#444; margin-bottom:24px;">คะแนนของคุณ</p>
-    <div style="font-size:72px; font-weight:800; color:#1a9e5c; line-height:1;" id="modalScore">18</div>
-    <div style="font-size:22px; color:#666; margin-bottom:32px;">จาก 20 ข้อ (90%)</div>
-    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
-      <a href="{% url 'results' %}" style="min-width:160px; height:52px; border-radius:14px; background:linear-gradient(180deg,#234a9d 0%,#1d418f 100%); color:#fff; font-size:18px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none;">
+<div id="resultModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:28px;padding:44px 52px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.22);max-width:460px;width:90%;">
+    <div id="resultEmoji" style="font-size:60px;margin-bottom:14px;">🎉</div>
+    <h2 style="font-size:28px;font-weight:800;color:#1a3d7a;margin-bottom:6px;">ส่งคำตอบสำเร็จ!</h2>
+    <p style="font-size:15px;color:#555;margin-bottom:6px;">สมชาย จิตรภักดิ์ &nbsp;|&nbsp; รหัส 6401001</p>
+    <p style="font-size:14px;color:#888;margin-bottom:22px;">แบบทดสอบหลังเรียน · บทที่ 1–10</p>
+    <div id="modalScore" style="font-size:72px;font-weight:800;color:#1a9e5c;line-height:1;">0</div>
+    <div style="font-size:20px;color:#666;margin-bottom:6px;">จาก 20 ข้อ</div>
+    <div id="modalPct" style="font-size:18px;color:#888;margin-bottom:28px;"></div>
+    <div id="resultMsg" style="font-size:14px;padding:10px 16px;border-radius:10px;margin-bottom:24px;"></div>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+      <a href="{% url 'results' %}" style="min-width:150px;height:50px;border-radius:14px;background:linear-gradient(180deg,#234a9d,#1d418f);color:#fff;font-size:16px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;">
         <i class="fa-solid fa-chart-bar"></i> ดูผลการเรียน
       </a>
-      <a href="{% url 'home' %}" style="min-width:160px; height:52px; border-radius:14px; background:linear-gradient(180deg,#e2e9f4 0%,#d0daea 100%); color:#26374c; font-size:18px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none;">
+      <a href="{% url 'home' %}" style="min-width:150px;height:50px;border-radius:14px;background:linear-gradient(180deg,#e2e9f4,#d0daea);color:#26374c;font-size:16px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;">
         <i class="fa-solid fa-house"></i> หน้าแรก
       </a>
     </div>
@@ -105,7 +72,7 @@ const questions = [
   { q: "คำสั่งใดใช้ลบข้อมูลในตาราง?", opts: ["REMOVE","DROP","ERASE","DELETE"], ans: "D" },
   { q: "Normalization คือกระบวนการใด?", opts: ["การสำรองข้อมูล","การลดความซ้ำซ้อนของข้อมูล","การเข้ารหัสข้อมูล","การบีบอัดข้อมูล"], ans: "B" },
   { q: "ER Diagram ใช้สำหรับอะไร?", opts: ["แสดงโครงสร้างเครือข่าย","ออกแบบฐานข้อมูลเชิงแนวคิด","แสดงผังโปรแกรม","วาดกราฟสถิติ"], ans: "B" },
-  { q: "ข้อใดคือประเภทของความสัมพันธ์ใน ER Diagram?", opts: ["One-to-One, One-to-Many, Many-to-Many","High, Medium, Low","Public, Private, Protected","Input, Process, Output"], ans: "A" },
+  { q: "ชนิดของความสัมพันธ์ใน ER Diagram มีอะไรบ้าง?", opts: ["One-to-One, One-to-Many, Many-to-Many","High, Medium, Low","Public, Private, Protected","Input, Process, Output"], ans: "A" },
   { q: "คำสั่ง WHERE ใช้ทำอะไรใน SQL?", opts: ["เรียงลำดับผลลัพธ์","กำหนดเงื่อนไขในการกรองข้อมูล","จัดกลุ่มข้อมูล","เชื่อมตาราง"], ans: "B" },
   { q: "คำสั่ง ORDER BY ใช้ทำอะไร?", opts: ["เรียงลำดับข้อมูล","กรองข้อมูล","นับจำนวน","หาค่าเฉลี่ย"], ans: "A" },
   { q: "คำสั่ง GROUP BY ใช้ทำอะไร?", opts: ["เรียงลำดับข้อมูล","จัดกลุ่มข้อมูล","กรองข้อมูล","ลบข้อมูล"], ans: "B" },
@@ -118,18 +85,27 @@ const questions = [
 ]
 
 let current = 0
-const answers = new Array(20).fill(null)
+const answers = new Array(questions.length).fill(null)
 
 function buildNumberGrid() {
   const grid = document.getElementById('numberGrid')
+  if (!grid) return
   grid.innerHTML = ''
+  let answered = 0
   questions.forEach((_, i) => {
+    if (answers[i]) answered++
     const btn = document.createElement('button')
-    btn.className = 'quiz-number' + (answers[i] ? ' quiz-number--done' : '') + (i === current ? ' quiz-number--current' : '')
+    btn.className = 'quiz-number' +
+      (answers[i] ? ' quiz-number--done' : '') +
+      (i === current ? ' quiz-number--current' : '')
     btn.textContent = i + 1
     btn.onclick = () => goTo(i)
     grid.appendChild(btn)
   })
+  const countEl = document.getElementById('answeredCount')
+  const fillEl  = document.getElementById('progressFill')
+  if (countEl) countEl.textContent = answered
+  if (fillEl)  fillEl.style.width = (answered / questions.length * 100) + '%'
 }
 
 function renderQuestion() {
@@ -152,34 +128,60 @@ function renderQuestion() {
       document.querySelectorAll('#optionsGrid .quiz-option').forEach(l => l.classList.remove('quiz-option--selected'))
       label.classList.add('quiz-option--selected')
       buildNumberGrid()
-      checkSubmit()
     })
     grid.appendChild(label)
   })
   document.getElementById('prevBtn').disabled = current === 0
-  document.getElementById('nextBtn').style.display = current === questions.length - 1 ? 'none' : ''
-  document.getElementById('submitRow').style.display = current === questions.length - 1 ? 'flex' : 'none'
+  const isLast = current === questions.length - 1
+  document.getElementById('nextBtn').style.display = isLast ? 'none' : ''
+  document.getElementById('submitRow').style.display = isLast ? 'flex' : 'none'
   buildNumberGrid()
 }
 
 function goTo(i) { current = i; renderQuestion() }
 function changeQuestion(dir) { goTo(Math.max(0, Math.min(questions.length - 1, current + dir))) }
-function checkSubmit() {}
 
 function submitQuiz() {
+  clearInterval(timerInterval)
   const score = answers.filter((a, i) => a === questions[i].ans).length
+  const pct = Math.round(score / questions.length * 100)
   document.getElementById('modalScore').textContent = score
+  document.getElementById('modalPct').textContent = pct + '% · ' + (pct >= 70 ? 'ผ่านเกณฑ์' : 'ไม่ผ่านเกณฑ์')
+  const msg = document.getElementById('resultMsg')
+  if (pct >= 80) {
+    document.getElementById('resultEmoji').textContent = '🏆'
+    msg.style.background = '#d4edda'; msg.style.color = '#155724'
+    msg.textContent = 'ยอดเยี่ยม! คะแนนผ่านเกณฑ์ดีเยี่ยม'
+  } else if (pct >= 70) {
+    document.getElementById('resultEmoji').textContent = '🎉'
+    msg.style.background = '#d4edda'; msg.style.color = '#155724'
+    msg.textContent = 'ผ่านเกณฑ์การประเมิน ขอแสดงความยินดี!'
+  } else if (pct >= 60) {
+    document.getElementById('resultEmoji').textContent = '📖'
+    msg.style.background = '#fff3cd'; msg.style.color = '#856404'
+    msg.textContent = 'ยังไม่ผ่านเกณฑ์ ควรทบทวนบทเรียนและทำใหม่'
+  } else {
+    document.getElementById('resultEmoji').textContent = '📚'
+    msg.style.background = '#f8d7da'; msg.style.color = '#721c24'
+    msg.textContent = 'ไม่ผ่านเกณฑ์ กรุณาทบทวนเนื้อหาทั้งหมดและทำแบบทดสอบใหม่'
+  }
   document.getElementById('resultModal').style.display = 'flex'
 }
 
-/* Timer */
+/* ── Timer ── */
 let timeLeft = 30 * 60
 const timerEl = document.getElementById('quizTimer')
+
 const timerInterval = setInterval(() => {
   timeLeft--
-  const m = String(Math.floor(timeLeft / 60)).padStart(2,'0')
-  const s = String(timeLeft % 60).padStart(2,'0')
-  timerEl.textContent = m + ':' + s + ' นาที'
+  const m = String(Math.floor(timeLeft / 60)).padStart(2, '0')
+  const s = String(timeLeft % 60).padStart(2, '0')
+  timerEl.textContent = m + ':' + s
+
+  if (timeLeft <= 60)        { timerEl.className = 'exam-timer--danger' }
+  else if (timeLeft <= 5*60) { timerEl.className = 'exam-timer--warning' }
+  else                       { timerEl.className = '' }
+
   if (timeLeft <= 0) { clearInterval(timerInterval); submitQuiz() }
 }, 1000)
 

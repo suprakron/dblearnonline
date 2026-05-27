@@ -86,6 +86,15 @@ def results(request):
 def teacher_dashboard(request):
     return render(request, 'dblearn/teacher_dashboard.html')
 
+def teacher_students(request):
+    return render(request, 'dblearn/teacher_students.html')
+
+def teacher_lessons(request):
+    return render(request, 'dblearn/teacher_lessons.html')
+
+def teacher_grades(request):
+    return render(request, 'dblearn/teacher_grades.html')
+
 def login_page(request):
     return render(request, 'dblearn/login.html')
 

@@ -1,0 +1,192 @@
+{% extends 'dblearn/teacher_base.html' %}
+
+{% block title %}จัดการนักเรียน – DBLearn{% endblock %}
+
+{% block topbar_title %}
+<h1>จัดการนักเรียน</h1>
+<p>รายชื่อนักเรียนทั้งหมด – วิชาโปรแกรมฐานข้อมูล</p>
+{% endblock %}
+
+{% block content %}
+
+<!-- Summary -->
+<div class="td-summary-row">
+  <div class="td-summary-card">
+    <div class="td-summary-icon td-summary-icon--blue"><i class="fa-solid fa-users"></i></div>
+    <div>
+      <div class="td-summary-num">32</div>
+      <div class="td-summary-label">นักเรียนทั้งหมด</div>
+      <div class="td-summary-sub">2 ห้องเรียน</div>
+    </div>
+  </div>
+  <div class="td-summary-card">
+    <div class="td-summary-icon td-summary-icon--green"><i class="fa-solid fa-circle-check"></i></div>
+    <div>
+      <div class="td-summary-num">24</div>
+      <div class="td-summary-label">ผ่านเกณฑ์</div>
+      <div class="td-summary-sub">75% ของทั้งหมด</div>
+    </div>
+  </div>
+  <div class="td-summary-card">
+    <div class="td-summary-icon td-summary-icon--yellow"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <div>
+      <div class="td-summary-num">5</div>
+      <div class="td-summary-label">ต้องติดตาม</div>
+      <div class="td-summary-sub">คะแนน 60–69%</div>
+    </div>
+  </div>
+  <div class="td-summary-card">
+    <div class="td-summary-icon td-summary-icon--red"><i class="fa-solid fa-circle-xmark"></i></div>
+    <div>
+      <div class="td-summary-num">3</div>
+      <div class="td-summary-label">ไม่ผ่านเกณฑ์</div>
+      <div class="td-summary-sub">ต่ำกว่า 60%</div>
+    </div>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="td-filters">
+  <div class="td-search-box">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="ค้นหาชื่อหรือรหัสนักเรียน...">
+  </div>
+  <select class="td-select"><option>ห้องเรียนทั้งหมด</option><option>ห้อง 2101</option><option>ห้อง 2102</option></select>
+  <select class="td-select"><option>สถานะทั้งหมด</option><option>ผ่านเกณฑ์</option><option>ต้องติดตาม</option><option>ไม่ผ่านเกณฑ์</option></select>
+  <button class="td-btn td-btn--primary" style="margin-left:auto;"><i class="fa-solid fa-file-export"></i> ส่งออก Excel</button>
+</div>
+
+<!-- Table -->
+<div class="td-table-card">
+  <div class="td-table-header">
+    <h3>รายชื่อนักเรียน (แสดง 12 จาก 32 คน)</h3>
+    <div style="display:flex;gap:8px;">
+      <button class="td-btn td-btn--outline td-btn--sm">ส่งข้อความกลุ่ม</button>
+      <button class="td-btn td-btn--primary td-btn--sm"><i class="fa-solid fa-plus"></i> เพิ่มนักเรียน</button>
+    </div>
+  </div>
+  <table class="td-table">
+    <thead>
+      <tr>
+        <th>รหัส</th>
+        <th class="left">ชื่อ – นามสกุล</th>
+        <th>ห้อง</th>
+        <th>ก่อนเรียน</th>
+        <th>หลังเรียน</th>
+        <th>คะแนนรวม</th>
+        <th>ความคืบหน้า</th>
+        <th>สถานะ</th>
+        <th>การดำเนินการ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- ห้อง 2101 -->
+      <tr>
+        <td>6401001</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👨</div><div><div>สมชาย จิตรภักดิ์</div><div class="td-name-sub">6401001 · ห้อง 2101</div></div></div></td>
+        <td>2101</td><td>16/20</td><td>44/50</td><td><strong>85%</strong></td>
+        <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:85%"></div></div><div style="font-size:10px;color:#888;margin-top:3px;">85%</div></td>
+        <td><span class="td-status td-status--pass">ผ่านเกณฑ์</span></td>
+        <td style="white-space:nowrap;"><button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button> <button class="td-action-btn td-action-btn--msg">ข้อความ</button></td>
+      </tr>
+      <tr>
+        <td>6401002</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👩</div><div><div>ศิริพร พนมรักษ์</div><div class="td-name-sub">6401002 · ห้อง 2101</div></div></div></td>
+        <td>2101</td><td>19/20</td><td>49/50</td><td><strong style="color:#059669;">96%</strong></td>
+        <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:96%"></div></div><div style="font-size:10px;color:#888;margin-top:3px;">96%</div></td>
+        <td><span class="td-status td-status--pass">ผ่านเกณฑ์</span></td>
+        <td style="white-space:nowrap;"><button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button> <button class="td-action-btn td-action-btn--msg">ข้อความ</button></td>
+      </tr>
+      <tr>
+        <td>6401003</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👧</div><div><div>มาลี สมบัติบุญ</div><div class="td-name-sub">6401003 · ห้อง 2101</div></div></div></td>
+        <td>2101</td><td>18/20</td><td>46/50</td><td><strong>91%</strong></td>
+        <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:91%"></div></div><div style="font-size:10px;color:#888;margin-top:3px;">91%</div></td>
+        <td><span class="td-status td-status--pass">ผ่านเกณฑ์</span></td>
+        <td style="white-space:nowrap;"><button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button> <button class="td-action-btn td-action-btn--msg">ข้อความ</button></td>
+      </tr>
+      <tr>
+        <td>6401004</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👦</div><div><div>วิชัย ดวงดีมา</div><div class="td-name-sub">6401004 · ห้อง 2101</div></div></div></td>
+        <td>2101</td><td>14/20</td><td>36/50</td><td><strong>72%</strong></td>
+        <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:72%"></div></div><div style="font-size:10px;color:#888;margin-top:3px;">72%</div></td>
+        <td><span class="td-status td-status--pass">ผ่านเกณฑ์</span></td>
+        <td style="white-space:nowrap;"><button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button> <button class="td-action-btn td-action-btn--msg">ข้อความ</button></td>
+      </tr>
+      <tr>
+        <td>6401005</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👩</div><div><div>นารี บุญมาถึง</div><div class="td-name-sub">6401005 · ห้อง 2101</div></div></div></td>
+        <td>2101</td><td>9/20</td><td>22/50</td><td><strong style="color:#856404;">44%</strong></td>
+        <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:44%;background:#f0b429;"></div></div><div style="font-size:10px;color:#888;margin-top:3px;">44%</div></td>
+        <td><span class="td-status td-status--fail">ไม่ผ่านเกณฑ์</span></td>
+        <td style="white-space:nowrap;"><button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button> <button class="td-action-btn td-action-btn--msg">ข้อความ</button></td>
+      </tr>
+      <tr>
+        <td>6401006</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👦</div><div><div>ธนากร แก้วใจ</div><div class="td-name-sub">6401006 · ห้อง 2101</div></div></div></td>
+        <td>2101</td><td>12/20</td><td>29/50</td><td><strong style="color:#856404;">59%</strong></td>
+        <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:59%;background:#f0b429;"></div></div><div style="font-size:10px;color:#888;margin-top:3px;">59%</div></td>
+        <td><span class="td-status td-status--follow">ต้องติดตาม</span></td>
+        <td style="white-space:nowrap;"><button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button> <button class="td-action-btn td-action-btn--msg">ข้อความ</button></td>
+      </tr>
+      <tr>
+        <td>6401007</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👦</div><div><div>กมล สุขใสดี</div><div class="td-name-sub">6401007 · ห้อง 2101</div></div></div></td>
+        <td>2101</td><td>7/20</td><td>18/50</td><td><strong style="color:#dc2626;">36%</strong></td>
+        <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:36%;background:#ef4444;"></div></div><div style="font-size:10px;color:#888;margin-top:3px;">36%</div></td>
+        <td><span class="td-status td-status--fail">ไม่ผ่านเกณฑ์</span></td>
+        <td style="white-space:nowrap;"><button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button> <button class="td-action-btn td-action-btn--msg">ข้อความ</button></td>
+      </tr>
+      <!-- ห้อง 2102 -->
+      <tr>
+        <td>6401008</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👦</div><div><div>ปิยะ รักชาติไทย</div><div class="td-name-sub">6401008 · ห้อง 2102</div></div></div></td>
+        <td>2102</td><td>17/20</td><td>43/50</td><td><strong>86%</strong></td>
+        <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:86%"></div></div><div style="font-size:10px;color:#888;margin-top:3px;">86%</div></td>
+        <td><span class="td-status td-status--pass">ผ่านเกณฑ์</span></td>
+        <td style="white-space:nowrap;"><button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button> <button class="td-action-btn td-action-btn--msg">ข้อความ</button></td>
+      </tr>
+      <tr>
+        <td>6401009</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👩</div><div><div>นิภา ทองดีงาม</div><div class="td-name-sub">6401009 · ห้อง 2102</div></div></div></td>
+        <td>2102</td><td>20/20</td><td>48/50</td><td><strong style="color:#059669;">96%</strong></td>
+        <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:96%"></div></div><div style="font-size:10px;color:#888;margin-top:3px;">96%</div></td>
+        <td><span class="td-status td-status--pass">ผ่านเกณฑ์</span></td>
+        <td style="white-space:nowrap;"><button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button> <button class="td-action-btn td-action-btn--msg">ข้อความ</button></td>
+      </tr>
+      <tr>
+        <td>6401010</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👦</div><div><div>อานนท์ เจริญดี</div><div class="td-name-sub">6401010 · ห้อง 2102</div></div></div></td>
+        <td>2102</td><td>15/20</td><td>38/50</td><td><strong>76%</strong></td>
+        <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:76%"></div></div><div style="font-size:10px;color:#888;margin-top:3px;">76%</div></td>
+        <td><span class="td-status td-status--pass">ผ่านเกณฑ์</span></td>
+        <td style="white-space:nowrap;"><button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button> <button class="td-action-btn td-action-btn--msg">ข้อความ</button></td>
+      </tr>
+      <tr>
+        <td>6401011</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👧</div><div><div>กุลณัฐ สมใจดี</div><div class="td-name-sub">6401011 · ห้อง 2102</div></div></div></td>
+        <td>2102</td><td>11/20</td><td>27/50</td><td><strong style="color:#856404;">55%</strong></td>
+        <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:55%;background:#f0b429;"></div></div><div style="font-size:10px;color:#888;margin-top:3px;">55%</div></td>
+        <td><span class="td-status td-status--follow">ต้องติดตาม</span></td>
+        <td style="white-space:nowrap;"><button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button> <button class="td-action-btn td-action-btn--msg">ข้อความ</button></td>
+      </tr>
+      <tr>
+        <td>6401012</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👧</div><div><div>หน่อย ยิ้มใสดี</div><div class="td-name-sub">6401012 · ห้อง 2102</div></div></div></td>
+        <td>2102</td><td>6/20</td><td>16/50</td><td><strong style="color:#dc2626;">32%</strong></td>
+        <td><div class="td-progress-bar"><div class="td-progress-fill" style="width:32%;background:#ef4444;"></div></div><div style="font-size:10px;color:#888;margin-top:3px;">32%</div></td>
+        <td><span class="td-status td-status--fail">ไม่ผ่านเกณฑ์</span></td>
+        <td style="white-space:nowrap;"><button class="td-action-btn td-action-btn--view">ดูรายละเอียด</button> <button class="td-action-btn td-action-btn--msg">ข้อความ</button></td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="padding:14px 22px;display:flex;align-items:center;justify-content:space-between;font-size:13px;color:#888;border-top:1px solid #f0f3fa;">
+    <span>แสดง 1–12 จาก 32 รายการ</span>
+    <div style="display:flex;gap:6px;">
+      <button class="td-btn td-btn--outline td-btn--sm">‹ ก่อนหน้า</button>
+      <button class="td-btn td-btn--primary td-btn--sm">ถัดไป ›</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,224 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}แบบทดสอบ – DBLearn{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/test.css' %}">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Noto Sans Thai", sans-serif;
+      background: #f0f4fb; color: #1f2b3a;
+      height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    /* ── Exam Shell ── */
+    .exam-shell { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+
+    /* ── Exam Header ── */
+    .exam-header {
+      height: 68px; flex-shrink: 0;
+      background: linear-gradient(90deg, #1a3d7a 0%, #234a9d 100%);
+      display: flex; align-items: center; padding: 0 24px; gap: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.18);
+    }
+    .exam-brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .exam-brand__logo {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: rgba(255,255,255,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: #fff;
+    }
+    .exam-brand__name { font-size: 18px; font-weight: 800; color: #fff; }
+    .exam-vline { width: 1px; height: 30px; background: rgba(255,255,255,.2); flex-shrink: 0; }
+    .exam-title-area { flex: 1; min-width: 0; }
+    .exam-title-area h2 { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .exam-title-area p  { font-size: 11px; color: rgba(255,255,255,.7); margin-top: 2px; }
+    .exam-header__right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+
+    /* Student pill */
+    .exam-student {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,.12); padding: 5px 14px 5px 7px; border-radius: 40px;
+    }
+    .exam-student__ava {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      display: flex; align-items: center; justify-content: center; font-size: 17px;
+    }
+    .exam-student strong { font-size: 13px; font-weight: 700; color: #fff; display: block; line-height: 1.2; }
+    .exam-student span   { font-size: 11px; color: rgba(255,255,255,.7); }
+
+    /* Timer box */
+    .exam-timer-box {
+      background: rgba(255,255,255,.12); border-radius: 12px;
+      padding: 5px 18px; text-align: center; min-width: 108px;
+    }
+    .exam-timer-box__label { font-size: 10px; color: rgba(255,255,255,.65); margin-bottom: 1px; }
+    #quizTimer {
+      font-size: 22px; font-weight: 800; color: #fff;
+      font-variant-numeric: tabular-nums; letter-spacing: 1px; display: block;
+    }
+    .exam-timer--warning { color: #fbbf24 !important; }
+    .exam-timer--danger  { color: #f87171 !important; animation: tpulse .8s infinite; }
+    @keyframes tpulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+
+    /* ── Exam Body ── */
+    .exam-body { flex: 1; display: grid; grid-template-columns: 236px 1fr; min-height: 0; }
+
+    /* ── Left Panel ── */
+    .exam-panel {
+      background: #fff; border-right: 1.5px solid #e8ecf5;
+      overflow-y: auto; padding: 18px 14px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .exam-panel__head h4 { font-size: 13px; font-weight: 700; color: #1a3d7a; margin-bottom: 8px; }
+    .exam-panel__prog-row {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: #555; margin-bottom: 6px;
+    }
+    .exam-panel__prog-row strong { color: #1a3d7a; }
+    .exam-panel__bar { height: 7px; background: #e8ecf5; border-radius: 4px; overflow: hidden; }
+    .exam-panel__bar-fill {
+      height: 100%; border-radius: 4px;
+      background: linear-gradient(90deg,#059669,#10b981); transition: width .3s;
+      width: 0%;
+    }
+
+    /* Number grid inside panel */
+    .exam-panel .quiz-number-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 7px; }
+    .exam-panel .quiz-number {
+      width: 100%; aspect-ratio: 1; border-radius: 8px;
+      border: 1.5px solid #d0daea; background: #f8f9ff;
+      font-size: 13px; font-weight: 600; color: #666;
+      cursor: pointer; transition: all .15s;
+    }
+    .exam-panel .quiz-number--done    { background: #d4edda; border-color: #28a745; color: #155724; }
+    .exam-panel .quiz-number--current { background: #1a3d7a; border-color: #1a3d7a; color: #fff; }
+    .exam-panel .quiz-number:hover:not(.quiz-number--current) { border-color: #1a3d7a; color: #1a3d7a; }
+
+    .exam-panel__legend {
+      background: #f8f9ff; border-radius: 10px; padding: 10px 12px;
+      display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #555;
+    }
+    .exam-panel__legend div { display: flex; align-items: center; gap: 8px; }
+    .ex-dot { width: 13px; height: 13px; border-radius: 4px; flex-shrink: 0; }
+    .ex-dot--done    { background: #28a745; }
+    .ex-dot--current { background: #1a3d7a; }
+    .ex-dot--todo    { background: #d0daea; }
+
+    .exam-panel__warn {
+      font-size: 11px; color: #856404; background: #fff3cd;
+      padding: 10px 12px; border-radius: 8px; border-left: 3px solid #f0b429;
+      line-height: 1.5;
+    }
+    .exam-panel__info {
+      font-size: 12px; color: #555; background: #f0f4fb;
+      padding: 10px 12px; border-radius: 8px;
+      display: flex; flex-direction: column; gap: 5px; line-height: 1.4;
+    }
+    .exam-panel__info strong { color: #1a3d7a; }
+
+    /* ── Main Question Area ── */
+    .exam-main { overflow-y: auto; padding: 24px 32px; background: #f0f4fb; }
+
+    /* hide old topbar since header is now the topbar */
+    .quiz-topbar { display: none !important; }
+
+    @media (max-width: 768px) {
+      .exam-body { grid-template-columns: 1fr; }
+      .exam-panel { display: none; }
+      .exam-student { display: none; }
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- ROLE BANNER -->
+<div style="background:linear-gradient(90deg,#059669,#10b981);color:#fff;text-align:center;padding:7px 16px;font-size:13px;font-weight:700;letter-spacing:.5px;font-family:'Noto Sans Thai',sans-serif;">
+  🎓 มุมมองนักเรียน – ระหว่างทำแบบทดสอบ &nbsp;|&nbsp; วิชาโปรแกรมฐานข้อมูล
+</div>
+
+<div class="exam-shell">
+
+  <!-- ── Exam Header ── -->
+  <header class="exam-header">
+    <div class="exam-brand">
+      <div class="exam-brand__logo"><i class="fa-solid fa-database"></i></div>
+      <span class="exam-brand__name">DBLearn</span>
+    </div>
+    <div class="exam-vline"></div>
+    <div class="exam-title-area">
+      <h2>{% block exam_title %}แบบทดสอบ{% endblock %}</h2>
+      <p>{% block exam_subtitle %}วิชาโปรแกรมฐานข้อมูล{% endblock %}</p>
+    </div>
+    <div class="exam-header__right">
+      <!-- Student info -->
+      <div class="exam-student">
+        <div class="exam-student__ava">👨‍🎓</div>
+        <div>
+          <strong>สมชาย จิตรภักดิ์</strong>
+          <span>รหัส 6401001 · ห้อง 2101</span>
+        </div>
+      </div>
+      <!-- Timer -->
+      <div class="exam-timer-box">
+        <div class="exam-timer-box__label">เวลาที่เหลือ</div>
+        <span id="quizTimer">{% block timer_init %}10:00{% endblock %}</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Exam Body ── -->
+  <div class="exam-body">
+
+    <!-- Left Panel -->
+    <aside class="exam-panel">
+      <div class="exam-panel__head">
+        <h4><i class="fa-solid fa-list-ol" style="color:#6a35c2;margin-right:6px;"></i>ตรวจสอบคำตอบ</h4>
+        <div class="exam-panel__prog-row">
+          <span>ตอบแล้ว</span>
+          <strong><span id="answeredCount">0</span> / {% block total_questions %}10{% endblock %} ข้อ</strong>
+        </div>
+        <div class="exam-panel__bar">
+          <div class="exam-panel__bar-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div class="quiz-number-grid" id="numberGrid"></div>
+
+      <div class="exam-panel__legend">
+        <div><span class="ex-dot ex-dot--done"></span> ตอบแล้ว</div>
+        <div><span class="ex-dot ex-dot--current"></span> กำลังทำอยู่</div>
+        <div><span class="ex-dot ex-dot--todo"></span> ยังไม่ตอบ</div>
+      </div>
+
+      <div class="exam-panel__info">
+        <div><strong>วิชา:</strong> โปรแกรมฐานข้อมูล</div>
+        <div><strong>ภาคเรียน:</strong> 1/2567</div>
+        <div><strong>วันที่สอบ:</strong> 27 พ.ค. 2568</div>
+        <div><strong>ห้อง:</strong> 2101</div>
+      </div>
+
+      <div class="exam-panel__warn">
+        ⚠️ ห้ามออกจากหน้าสอบ<br>ระหว่างทำแบบทดสอบ
+      </div>
+    </aside>
+
+    <!-- Main: question rendered here -->
+    <main class="exam-main">
+      {% block content %}{% endblock %}
+    </main>
+
+  </div>
+</div>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

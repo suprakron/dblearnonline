@@ -10,7 +10,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: "Noto Sans Thai", sans-serif; background: #f0f4fb; color: #1f2b3a; min-height: 100vh; display: flex; }
+    body { font-family: "Noto Sans Thai", sans-serif; background: #f0f4fb; color: #1f2b3a; min-height: 100vh; display: flex; flex-direction: column; }
+    .td-wrap { display: flex; flex: 1; min-height: 0; }
 
     /* ── Sidebar ── */
     .td-sidebar {
@@ -206,6 +207,12 @@
 </head>
 <body>
 
+<!-- ROLE BANNER -->
+<div style="background:linear-gradient(90deg,#5b21b6,#7c3aed);color:#fff;text-align:center;padding:8px 16px;font-size:13px;font-weight:700;letter-spacing:.5px;font-family:'Noto Sans Thai',sans-serif;z-index:9999;position:relative;width:100%;">
+  👨‍🏫 มุมมองครูผู้สอน &nbsp;|&nbsp; วิชาโปรแกรมฐานข้อมูล – DBLearn
+</div>
+
+<div class="td-wrap">
 <!-- Sidebar -->
 <aside class="td-sidebar">
   <div class="td-sidebar__brand">
@@ -217,13 +224,11 @@
   </div>
 
   <nav class="td-sidebar__nav">
-    <a href="{% url 'home' %}" class="td-nav-item"><i class="fa-solid fa-house"></i> หน้าแรก</a>
-    <a href="{% url 'lesson_detail' %}" class="td-nav-item"><i class="fa-solid fa-book-open"></i> บทเรียน</a>
-    <a href="#" class="td-nav-item"><i class="fa-solid fa-users"></i> นักเรียน</a>
-    <a href="{% url 'results' %}" class="td-nav-item"><i class="fa-solid fa-chart-bar"></i> คะแนน</a>
-    <a href="#" class="td-nav-item"><i class="fa-solid fa-file-lines"></i> รายงาน</a>
-    <a href="{% url 'teacher_dashboard' %}" class="td-nav-item active"><i class="fa-solid fa-chart-line"></i> สรุปความคืบหน้า</a>
-    <a href="#" class="td-nav-item"><i class="fa-solid fa-gear"></i> การตั้งค่า</a>
+    <a href="{% url 'teacher_dashboard' %}" class="td-nav-item active"><i class="fa-solid fa-chart-line"></i> สรุปภาพรวม</a>
+    <a href="{% url 'teacher_lessons' %}" class="td-nav-item"><i class="fa-solid fa-book-open"></i> จัดการบทเรียน</a>
+    <a href="{% url 'teacher_students' %}" class="td-nav-item"><i class="fa-solid fa-users"></i> จัดการนักเรียน</a>
+    <a href="{% url 'teacher_grades' %}" class="td-nav-item"><i class="fa-solid fa-chart-bar"></i> คะแนนและผลการเรียน</a>
+    <a href="{% url 'home' %}" class="td-nav-item"><i class="fa-solid fa-arrow-left"></i> กลับหน้าหลัก</a>
   </nav>
 </aside>
 
@@ -414,5 +419,6 @@
   </div>
 </div>
 
+</div><!-- /.td-wrap -->
 </body>
 </html>

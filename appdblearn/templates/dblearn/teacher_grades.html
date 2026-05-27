@@ -1,0 +1,257 @@
+{% extends 'dblearn/teacher_base.html' %}
+
+{% block title %}คะแนนและผลการเรียน – DBLearn{% endblock %}
+
+{% block topbar_title %}
+<h1>คะแนนและผลการเรียน</h1>
+<p>สรุปผลการเรียน – วิชาโปรแกรมฐานข้อมูล ภาคเรียนที่ 1/2567</p>
+{% endblock %}
+
+{% block content %}
+
+<!-- Summary -->
+<div class="td-summary-row">
+  <div class="td-summary-card">
+    <div class="td-summary-icon td-summary-icon--blue"><i class="fa-solid fa-users"></i></div>
+    <div>
+      <div class="td-summary-num">32</div>
+      <div class="td-summary-label">นักเรียนทั้งหมด</div>
+      <div class="td-summary-sub">2 ห้องเรียน</div>
+    </div>
+  </div>
+  <div class="td-summary-card">
+    <div class="td-summary-icon td-summary-icon--purple"><i class="fa-solid fa-star"></i></div>
+    <div>
+      <div class="td-summary-num">74.5</div>
+      <div class="td-summary-label">คะแนนเฉลี่ยรวม</div>
+      <div class="td-summary-sub">เกรด B+ (Good)</div>
+    </div>
+  </div>
+  <div class="td-summary-card">
+    <div class="td-summary-icon td-summary-icon--green"><i class="fa-solid fa-arrow-trend-up"></i></div>
+    <div>
+      <div class="td-summary-num">+18.3</div>
+      <div class="td-summary-label">คะแนนที่เพิ่มขึ้น</div>
+      <div class="td-summary-sub">ก่อน → หลังเรียน</div>
+    </div>
+  </div>
+  <div class="td-summary-card">
+    <div class="td-summary-icon td-summary-icon--yellow"><i class="fa-solid fa-award"></i></div>
+    <div>
+      <div class="td-summary-num">96%</div>
+      <div class="td-summary-label">คะแนนสูงสุด</div>
+      <div class="td-summary-sub">นิภา / ศิริพร</div>
+    </div>
+  </div>
+</div>
+
+<!-- Grade distribution + Bar chart row -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
+
+  <!-- Grade distribution -->
+  <div style="background:#fff;border-radius:18px;padding:22px 24px;box-shadow:0 4px 16px rgba(26,61,122,.07);">
+    <h3 style="font-size:15px;font-weight:700;color:#1a3d7a;margin-bottom:16px;">การกระจายเกรด</h3>
+    <div style="display:flex;gap:12px;">
+      <div class="td-grade-card td-grade-card--A" style="flex:1;border-radius:12px;padding:16px 10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+        <div class="td-grade-card__letter">A</div>
+        <div class="td-grade-card__count">8</div>
+        <div class="td-grade-card__range">90–100%</div>
+        <div class="td-grade-card__label">25%</div>
+      </div>
+      <div class="td-grade-card td-grade-card--B" style="flex:1;border-radius:12px;padding:16px 10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+        <div class="td-grade-card__letter">B</div>
+        <div class="td-grade-card__count">10</div>
+        <div class="td-grade-card__range">80–89%</div>
+        <div class="td-grade-card__label">31%</div>
+      </div>
+      <div class="td-grade-card td-grade-card--C" style="flex:1;border-radius:12px;padding:16px 10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+        <div class="td-grade-card__letter">C</div>
+        <div class="td-grade-card__count">6</div>
+        <div class="td-grade-card__range">70–79%</div>
+        <div class="td-grade-card__label">19%</div>
+      </div>
+      <div class="td-grade-card td-grade-card--D" style="flex:1;border-radius:12px;padding:16px 10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+        <div class="td-grade-card__letter">D</div>
+        <div class="td-grade-card__count">5</div>
+        <div class="td-grade-card__range">60–69%</div>
+        <div class="td-grade-card__label">16%</div>
+      </div>
+      <div class="td-grade-card td-grade-card--F" style="flex:1;border-radius:12px;padding:16px 10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+        <div class="td-grade-card__letter">F</div>
+        <div class="td-grade-card__count">3</div>
+        <div class="td-grade-card__range">&lt; 60%</div>
+        <div class="td-grade-card__label">9%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Score bar chart -->
+  <div style="background:#fff;border-radius:18px;padding:22px 24px;box-shadow:0 4px 16px rgba(26,61,122,.07);">
+    <h3 style="font-size:15px;font-weight:700;color:#1a3d7a;margin-bottom:16px;">คะแนนก่อน/หลังเรียน (เฉลี่ย)</h3>
+    <div style="display:flex;align-items:flex-end;gap:14px;height:110px;padding-bottom:4px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+        <span style="font-size:12px;font-weight:700;color:#1a3d7a;">52.4</span>
+        <div style="width:100%;height:66px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#93c5fd,#3b82f6);"></div>
+        <span style="font-size:11px;color:#888;">ก่อนเรียน</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+        <span style="font-size:12px;font-weight:700;color:#6a35c2;">70.7</span>
+        <div style="width:100%;height:88px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#c4aaee,#6a35c2);"></div>
+        <span style="font-size:11px;color:#888;">หลังเรียน</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+        <span style="font-size:12px;font-weight:700;color:#059669;">74.5</span>
+        <div style="width:100%;height:94px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#6ee7b7,#059669);"></div>
+        <span style="font-size:11px;color:#888;">รวม</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+        <span style="font-size:12px;font-weight:700;color:#d97706;">+18.3</span>
+        <div style="width:100%;height:23px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#fcd34d,#d97706);"></div>
+        <span style="font-size:11px;color:#888;">พัฒนา</span>
+      </div>
+    </div>
+    <p style="font-size:12px;color:#888;margin-top:8px;text-align:center;">คะแนนก่อนเรียน /20 คะแนน | คะแนนหลังเรียน /50 คะแนน</p>
+  </div>
+
+</div>
+
+<!-- Filters -->
+<div class="td-filters">
+  <div class="td-search-box">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="ค้นหานักเรียน...">
+  </div>
+  <select class="td-select"><option>ห้องเรียนทั้งหมด</option><option>ห้อง 2101</option><option>ห้อง 2102</option></select>
+  <select class="td-select"><option>เรียงจากมากไปน้อย</option><option>เรียงจากน้อยไปมาก</option><option>เรียงตามชื่อ</option></select>
+  <button class="td-btn td-btn--primary" style="margin-left:auto;"><i class="fa-solid fa-file-export"></i> ส่งออก Excel</button>
+</div>
+
+<!-- Grade table -->
+<div class="td-table-card">
+  <div class="td-table-header">
+    <h3>ตารางคะแนนทั้งหมด</h3>
+    <span style="font-size:13px;color:#888;">เกณฑ์ผ่าน: 70% ขึ้นไป</span>
+  </div>
+  <table class="td-table">
+    <thead>
+      <tr>
+        <th>รหัส</th>
+        <th class="left">ชื่อ – นามสกุล</th>
+        <th>ห้อง</th>
+        <th>ก่อนเรียน<br><small style="font-weight:400;color:#888;">/20</small></th>
+        <th>หลังเรียน<br><small style="font-weight:400;color:#888;">/50</small></th>
+        <th>แบบฝึกหัด<br><small style="font-weight:400;color:#888;">/30</small></th>
+        <th>รวม<br><small style="font-weight:400;color:#888;">/100</small></th>
+        <th>เกรด</th>
+        <th>สถานะ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>6401001</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👨</div><div>สมชาย จิตรภักดิ์<div class="td-name-sub">ห้อง 2101</div></div></div></td>
+        <td>2101</td><td>16</td><td>44</td><td>25</td>
+        <td><strong>85</strong></td>
+        <td><span style="font-size:16px;font-weight:800;color:#2563eb;">B</span></td>
+        <td><span class="td-status td-status--pass">ผ่านเกณฑ์</span></td>
+      </tr>
+      <tr>
+        <td>6401002</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👩</div><div>ศิริพร พนมรักษ์<div class="td-name-sub">ห้อง 2101</div></div></div></td>
+        <td>2101</td><td>19</td><td>49</td><td>28</td>
+        <td><strong style="color:#059669;">96</strong></td>
+        <td><span style="font-size:16px;font-weight:800;color:#059669;">A</span></td>
+        <td><span class="td-status td-status--pass">ผ่านเกณฑ์</span></td>
+      </tr>
+      <tr>
+        <td>6401003</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👧</div><div>มาลี สมบัติบุญ<div class="td-name-sub">ห้อง 2101</div></div></div></td>
+        <td>2101</td><td>18</td><td>46</td><td>27</td>
+        <td><strong style="color:#059669;">91</strong></td>
+        <td><span style="font-size:16px;font-weight:800;color:#059669;">A</span></td>
+        <td><span class="td-status td-status--pass">ผ่านเกณฑ์</span></td>
+      </tr>
+      <tr>
+        <td>6401004</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👦</div><div>วิชัย ดวงดีมา<div class="td-name-sub">ห้อง 2101</div></div></div></td>
+        <td>2101</td><td>14</td><td>36</td><td>22</td>
+        <td><strong>72</strong></td>
+        <td><span style="font-size:16px;font-weight:800;color:#d97706;">C</span></td>
+        <td><span class="td-status td-status--pass">ผ่านเกณฑ์</span></td>
+      </tr>
+      <tr>
+        <td>6401005</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👩</div><div>นารี บุญมาถึง<div class="td-name-sub">ห้อง 2101</div></div></div></td>
+        <td>2101</td><td>9</td><td>22</td><td>13</td>
+        <td><strong style="color:#dc2626;">44</strong></td>
+        <td><span style="font-size:16px;font-weight:800;color:#7f1d1d;">F</span></td>
+        <td><span class="td-status td-status--fail">ไม่ผ่านเกณฑ์</span></td>
+      </tr>
+      <tr>
+        <td>6401006</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👦</div><div>ธนากร แก้วใจ<div class="td-name-sub">ห้อง 2101</div></div></div></td>
+        <td>2101</td><td>12</td><td>29</td><td>18</td>
+        <td><strong style="color:#856404;">59</strong></td>
+        <td><span style="font-size:16px;font-weight:800;color:#dc2626;">D</span></td>
+        <td><span class="td-status td-status--follow">ต้องติดตาม</span></td>
+      </tr>
+      <tr>
+        <td>6401007</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👦</div><div>กมล สุขใสดี<div class="td-name-sub">ห้อง 2101</div></div></div></td>
+        <td>2101</td><td>7</td><td>18</td><td>11</td>
+        <td><strong style="color:#dc2626;">36</strong></td>
+        <td><span style="font-size:16px;font-weight:800;color:#7f1d1d;">F</span></td>
+        <td><span class="td-status td-status--fail">ไม่ผ่านเกณฑ์</span></td>
+      </tr>
+      <tr>
+        <td>6401008</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👦</div><div>ปิยะ รักชาติไทย<div class="td-name-sub">ห้อง 2102</div></div></div></td>
+        <td>2102</td><td>17</td><td>43</td><td>26</td>
+        <td><strong>86</strong></td>
+        <td><span style="font-size:16px;font-weight:800;color:#2563eb;">B</span></td>
+        <td><span class="td-status td-status--pass">ผ่านเกณฑ์</span></td>
+      </tr>
+      <tr>
+        <td>6401009</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👩</div><div>นิภา ทองดีงาม<div class="td-name-sub">ห้อง 2102</div></div></div></td>
+        <td>2102</td><td>20</td><td>48</td><td>28</td>
+        <td><strong style="color:#059669;">96</strong></td>
+        <td><span style="font-size:16px;font-weight:800;color:#059669;">A</span></td>
+        <td><span class="td-status td-status--pass">ผ่านเกณฑ์</span></td>
+      </tr>
+      <tr>
+        <td>6401010</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👦</div><div>อานนท์ เจริญดี<div class="td-name-sub">ห้อง 2102</div></div></div></td>
+        <td>2102</td><td>15</td><td>38</td><td>23</td>
+        <td><strong>76</strong></td>
+        <td><span style="font-size:16px;font-weight:800;color:#d97706;">C</span></td>
+        <td><span class="td-status td-status--pass">ผ่านเกณฑ์</span></td>
+      </tr>
+      <tr>
+        <td>6401011</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👧</div><div>กุลณัฐ สมใจดี<div class="td-name-sub">ห้อง 2102</div></div></div></td>
+        <td>2102</td><td>11</td><td>27</td><td>17</td>
+        <td><strong style="color:#856404;">55</strong></td>
+        <td><span style="font-size:16px;font-weight:800;color:#dc2626;">D</span></td>
+        <td><span class="td-status td-status--follow">ต้องติดตาม</span></td>
+      </tr>
+      <tr>
+        <td>6401012</td>
+        <td class="left"><div class="td-name-cell"><div class="td-name-avatar">👧</div><div>หน่อย ยิ้มใสดี<div class="td-name-sub">ห้อง 2102</div></div></div></td>
+        <td>2102</td><td>6</td><td>16</td><td>10</td>
+        <td><strong style="color:#dc2626;">32</strong></td>
+        <td><span style="font-size:16px;font-weight:800;color:#7f1d1d;">F</span></td>
+        <td><span class="td-status td-status--fail">ไม่ผ่านเกณฑ์</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="padding:14px 22px;display:flex;align-items:center;justify-content:space-between;font-size:13px;color:#888;border-top:1px solid #f0f3fa;">
+    <span>แสดง 1–12 จาก 32 รายการ</span>
+    <div style="display:flex;gap:6px;">
+      <button class="td-btn td-btn--outline td-btn--sm">‹ ก่อนหน้า</button>
+      <button class="td-btn td-btn--primary td-btn--sm">ถัดไป ›</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

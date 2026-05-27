@@ -1,0 +1,226 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ครูผู้สอน – DBLearn{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Noto Sans Thai", sans-serif; background: #f0f4fb; color: #1f2b3a; min-height: 100vh; display: flex; flex-direction: column; }
+    .td-wrap { display: flex; flex: 1; min-height: 0; }
+
+    /* ── Sidebar ── */
+    .td-sidebar { width: 220px; min-height: 100%; flex-shrink: 0; background: linear-gradient(180deg, #16398d 0%, #1d4a9f 100%); display: flex; flex-direction: column; padding: 0 0 24px; }
+    .td-sidebar__brand { display: flex; align-items: center; gap: 12px; padding: 22px 20px 18px; border-bottom: 1px solid rgba(255,255,255,.12); }
+    .td-sidebar__brand-logo { width: 42px; height: 42px; border-radius: 10px; background: rgba(255,255,255,.15); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #fff; }
+    .td-sidebar__brand-text { font-size: 15px; font-weight: 700; color: #fff; line-height: 1.3; }
+    .td-sidebar__brand-text span { font-size: 11px; font-weight: 400; opacity: .7; display: block; }
+    .td-sidebar__nav { display: flex; flex-direction: column; gap: 4px; padding: 18px 12px; flex: 1; }
+    .td-nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 12px; font-size: 14px; font-weight: 600; color: rgba(255,255,255,.75); cursor: pointer; transition: background .2s, color .2s; text-decoration: none; }
+    .td-nav-item i { width: 20px; text-align: center; font-size: 16px; }
+    .td-nav-item:hover { background: rgba(255,255,255,.1); color: #fff; }
+    .td-nav-item.active { background: rgba(255,255,255,.18); color: #fff; box-shadow: inset 3px 0 0 #a78bfa; }
+    .td-nav-divider { height: 1px; background: rgba(255,255,255,.1); margin: 8px 14px; }
+
+    /* ── Main ── */
+    .td-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+    /* ── Topbar ── */
+    .td-topbar { background: linear-gradient(90deg, #16398d 0%, #1d4a9f 100%); padding: 0 32px; height: 72px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; box-shadow: 0 2px 12px rgba(0,0,0,.15); }
+    .td-topbar__title { color: #fff; }
+    .td-topbar__title h1 { font-size: 20px; font-weight: 800; }
+    .td-topbar__title p { font-size: 13px; opacity: .8; margin-top: 1px; }
+    .td-topbar__right { display: flex; align-items: center; gap: 18px; }
+    .td-notif-btn { position: relative; background: rgba(255,255,255,.15); border: none; width: 40px; height: 40px; border-radius: 50%; color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .td-notif-btn__badge { position: absolute; top: 5px; right: 5px; width: 9px; height: 9px; background: #ff4757; border-radius: 50%; border: 2px solid #1d4a9f; }
+    .td-user { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .td-user__info { text-align: right; }
+    .td-user__info strong { font-size: 14px; font-weight: 700; color: #fff; display: block; }
+    .td-user__info span { font-size: 12px; color: rgba(255,255,255,.7); }
+    .td-user__avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #a0c4ff, #6889e8); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+
+    /* ── Content ── */
+    .td-content { padding: 24px 28px; flex: 1; overflow-y: auto; }
+
+    /* ── Filters ── */
+    .td-filters { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
+    .td-select { height: 44px; padding: 0 16px; border-radius: 10px; border: 1.5px solid #d0daea; background: #fff; font-size: 14px; font-family: inherit; color: #333; cursor: pointer; outline: none; min-width: 180px; }
+    .td-search-box { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid #d0daea; border-radius: 10px; padding: 0 14px; height: 44px; flex: 1; max-width: 300px; }
+    .td-search-box input { border: none; outline: none; font-size: 14px; font-family: inherit; flex: 1; background: transparent; }
+    .td-search-box i { color: #aaa; }
+
+    /* ── Summary row ── */
+    .td-summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .td-summary-card { background: #fff; border-radius: 16px; padding: 20px 22px; box-shadow: 0 4px 16px rgba(26,61,122,.07); display: flex; align-items: center; gap: 16px; }
+    .td-summary-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+    .td-summary-icon--blue  { background: #dbeaff; color: #1a3d7a; }
+    .td-summary-icon--green { background: #d4edda; color: #155724; }
+    .td-summary-icon--yellow{ background: #fff3cd; color: #856404; }
+    .td-summary-icon--red   { background: #f8d7da; color: #721c24; }
+    .td-summary-icon--purple{ background: #ede9fe; color: #5b21b6; }
+    .td-summary-num   { font-size: 26px; font-weight: 800; color: #1f2b3a; line-height: 1; }
+    .td-summary-label { font-size: 12px; color: #777; margin-top: 4px; }
+    .td-summary-sub   { font-size: 11px; color: #aaa; margin-top: 2px; }
+
+    /* ── Buttons ── */
+    .td-btn { padding: 9px 20px; border-radius: 10px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; transition: opacity .2s; }
+    .td-btn:hover { opacity: .85; }
+    .td-btn--primary { background: #6a35c2; color: #fff; }
+    .td-btn--outline { background: transparent; color: #6a35c2; border: 1.5px solid #6a35c2; }
+    .td-btn--sm { padding: 6px 14px; font-size: 12px; border-radius: 8px; }
+
+    /* ── Table card ── */
+    .td-table-card { background: #fff; border-radius: 18px; box-shadow: 0 4px 16px rgba(26,61,122,.07); overflow: hidden; }
+    .td-table-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid #f0f3fa; }
+    .td-table-header h3 { font-size: 15px; font-weight: 700; color: #1a3d7a; }
+    .td-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .td-table th { background: #f8f9ff; color: #1a3d7a; font-weight: 700; padding: 14px 16px; text-align: center; font-size: 13px; border-bottom: 1.5px solid #e8ecf5; }
+    .td-table th.left { text-align: left; }
+    .td-table td { padding: 13px 16px; border-bottom: 1px solid #f0f3fa; text-align: center; vertical-align: middle; }
+    .td-table td.left { text-align: left; }
+    .td-table tr:last-child td { border-bottom: none; }
+    .td-table tr:hover td { background: #fafaff; }
+    .td-name-cell { display: flex; align-items: center; gap: 10px; }
+    .td-name-avatar { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; background: #dbeaff; }
+    .td-name-sub { font-size: 11px; color: #999; }
+    .td-progress-bar { width: 80px; height: 8px; background: #e8ecf5; border-radius: 4px; margin: 0 auto; }
+    .td-progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #6a35c2, #9b6dd4); }
+    .td-status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .td-status--pass   { background: #d4edda; color: #155724; }
+    .td-status--follow { background: #fff3cd; color: #856404; }
+    .td-status--fail   { background: #f8d7da; color: #721c24; }
+    .td-action-btn { padding: 6px 14px; border-radius: 8px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: opacity .2s; }
+    .td-action-btn:hover { opacity: .8; }
+    .td-action-btn--view { background: #6a35c2; color: #fff; }
+    .td-action-btn--msg  { background: #e8f0fe; color: #1a3d7a; }
+    .td-action-btn--edit { background: #fff3cd; color: #856404; }
+
+    /* ── Lesson grid ── */
+    .td-lesson-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+    .td-lesson-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 4px 16px rgba(26,61,122,.07); position: relative; transition: box-shadow .2s; }
+    .td-lesson-card:hover { box-shadow: 0 8px 24px rgba(106,53,194,.12); }
+    .td-lesson-card__num { width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, #6a35c2, #9b6dd4); color: #fff; font-size: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    .td-lesson-card__title { font-size: 14px; font-weight: 700; color: #1a3d7a; margin-bottom: 5px; }
+    .td-lesson-card__desc { font-size: 12px; color: #777; margin-bottom: 12px; line-height: 1.6; min-height: 38px; }
+    .td-lesson-card__meta { display: flex; align-items: center; gap: 14px; font-size: 12px; color: #888; margin-bottom: 14px; }
+    .td-lesson-card__meta i { color: #6a35c2; margin-right: 3px; }
+    .td-lesson-prog-bar { height: 6px; background: #e8ecf5; border-radius: 3px; margin-bottom: 5px; }
+    .td-lesson-prog-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #6a35c2, #9b6dd4); }
+    .td-lesson-prog-text { font-size: 11px; color: #777; display: flex; justify-content: space-between; margin-bottom: 12px; }
+    .td-lesson-card__actions { display: flex; gap: 8px; }
+    .td-pub-badge { position: absolute; top: 14px; right: 14px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .td-pub-badge--pub   { background: #d4edda; color: #155724; }
+    .td-pub-badge--draft { background: #e8ecf5; color: #666; }
+
+    /* ── Grade distribution ── */
+    .td-grade-dist { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 26px; }
+    .td-grade-card { background: #fff; border-radius: 16px; padding: 20px 16px; text-align: center; box-shadow: 0 4px 16px rgba(26,61,122,.07); }
+    .td-grade-card__letter { font-size: 32px; font-weight: 800; line-height: 1; }
+    .td-grade-card__count  { font-size: 22px; font-weight: 800; color: #1a3d7a; margin: 6px 0 3px; }
+    .td-grade-card__range  { font-size: 11px; color: #999; margin-bottom: 2px; }
+    .td-grade-card__label  { font-size: 12px; color: #666; }
+    .td-grade-card--A .td-grade-card__letter { color: #059669; }
+    .td-grade-card--B .td-grade-card__letter { color: #2563eb; }
+    .td-grade-card--C .td-grade-card__letter { color: #d97706; }
+    .td-grade-card--D .td-grade-card__letter { color: #dc2626; }
+    .td-grade-card--F .td-grade-card__letter { color: #7f1d1d; }
+
+    /* ── Score bar chart ── */
+    .td-score-chart { background: #fff; border-radius: 18px; padding: 22px 24px; box-shadow: 0 4px 16px rgba(26,61,122,.07); margin-bottom: 24px; }
+    .td-score-chart h3 { font-size: 15px; font-weight: 700; color: #1a3d7a; margin-bottom: 18px; }
+    .td-score-bars { display: flex; align-items: flex-end; gap: 10px; height: 120px; }
+    .td-score-col { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
+    .td-score-bar { width: 100%; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, #9b6dd4, #6a35c2); transition: opacity .2s; }
+    .td-score-bar:hover { opacity: .8; }
+    .td-score-val  { font-size: 11px; font-weight: 700; color: #6a35c2; }
+    .td-score-name { font-size: 10px; color: #888; text-align: center; max-width: 60px; line-height: 1.2; }
+
+    @media (max-width: 1200px) {
+      .td-summary-row { grid-template-columns: repeat(2, 1fr); }
+      .td-grade-dist  { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .td-lesson-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .td-sidebar { display: none; }
+      .td-summary-row { grid-template-columns: 1fr 1fr; }
+      .td-grade-dist  { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    {% block extra_css %}{% endblock %}
+  </style>
+</head>
+<body>
+
+<!-- ROLE BANNER -->
+<div style="background:linear-gradient(90deg,#5b21b6,#7c3aed);color:#fff;text-align:center;padding:8px 16px;font-size:13px;font-weight:700;letter-spacing:.5px;font-family:'Noto Sans Thai',sans-serif;">
+  👨‍🏫 มุมมองครูผู้สอน &nbsp;|&nbsp; วิชาโปรแกรมฐานข้อมูล – DBLearn
+</div>
+
+<div class="td-wrap">
+
+  <!-- Sidebar -->
+  <aside class="td-sidebar">
+    <div class="td-sidebar__brand">
+      <div class="td-sidebar__brand-logo"><i class="fa-solid fa-database"></i></div>
+      <div class="td-sidebar__brand-text">วิทยาลัยเทคนิคระยอง<span>DBLearn Online</span></div>
+    </div>
+    <nav class="td-sidebar__nav">
+      <a href="{% url 'teacher_dashboard' %}" class="td-nav-item {% if request.resolver_match.url_name == 'teacher_dashboard' %}active{% endif %}">
+        <i class="fa-solid fa-chart-line"></i> สรุปภาพรวม
+      </a>
+      <a href="{% url 'teacher_lessons' %}" class="td-nav-item {% if request.resolver_match.url_name == 'teacher_lessons' %}active{% endif %}">
+        <i class="fa-solid fa-book-open"></i> จัดการบทเรียน
+      </a>
+      <a href="{% url 'teacher_students' %}" class="td-nav-item {% if request.resolver_match.url_name == 'teacher_students' %}active{% endif %}">
+        <i class="fa-solid fa-users"></i> จัดการนักเรียน
+      </a>
+      <a href="{% url 'teacher_grades' %}" class="td-nav-item {% if request.resolver_match.url_name == 'teacher_grades' %}active{% endif %}">
+        <i class="fa-solid fa-chart-bar"></i> คะแนนและผลการเรียน
+      </a>
+      <div class="td-nav-divider"></div>
+      <a href="{% url 'home' %}" class="td-nav-item">
+        <i class="fa-solid fa-arrow-left"></i> กลับหน้าหลัก
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <div class="td-main">
+    <header class="td-topbar">
+      <div class="td-topbar__title">
+        {% block topbar_title %}
+        <h1>Teacher Panel</h1>
+        <p>วิชาโปรแกรมฐานข้อมูล</p>
+        {% endblock %}
+      </div>
+      <div class="td-topbar__right">
+        <button class="td-notif-btn">
+          <i class="fa-regular fa-bell"></i>
+          <span class="td-notif-btn__badge"></span>
+        </button>
+        <div class="td-user">
+          <div class="td-user__info">
+            <strong>อ.สมศักดิ์ มั่นคง</strong>
+            <span>ครูผู้สอน</span>
+          </div>
+          <div class="td-user__avatar">👨‍🏫</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="td-content">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+</div>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

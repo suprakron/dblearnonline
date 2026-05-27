@@ -1,0 +1,263 @@
+{% extends 'dblearn/teacher_base.html' %}
+
+{% block title %}จัดการบทเรียน – DBLearn{% endblock %}
+
+{% block topbar_title %}
+<h1>จัดการบทเรียน</h1>
+<p>บทเรียนทั้งหมด – วิชาโปรแกรมฐานข้อมูล</p>
+{% endblock %}
+
+{% block content %}
+
+<!-- Summary -->
+<div class="td-summary-row">
+  <div class="td-summary-card">
+    <div class="td-summary-icon td-summary-icon--purple"><i class="fa-solid fa-book-open"></i></div>
+    <div>
+      <div class="td-summary-num">10</div>
+      <div class="td-summary-label">บทเรียนทั้งหมด</div>
+      <div class="td-summary-sub">8 เผยแพร่ · 2 ร่าง</div>
+    </div>
+  </div>
+  <div class="td-summary-card">
+    <div class="td-summary-icon td-summary-icon--blue"><i class="fa-solid fa-video"></i></div>
+    <div>
+      <div class="td-summary-num">34</div>
+      <div class="td-summary-label">วิดีโอทั้งหมด</div>
+      <div class="td-summary-sub">รวมทุกบท</div>
+    </div>
+  </div>
+  <div class="td-summary-card">
+    <div class="td-summary-icon td-summary-icon--green"><i class="fa-solid fa-clock"></i></div>
+    <div>
+      <div class="td-summary-num">68%</div>
+      <div class="td-summary-label">เฉลี่ยความคืบหน้า</div>
+      <div class="td-summary-sub">ของนักเรียนทั้งหมด</div>
+    </div>
+  </div>
+  <div class="td-summary-card">
+    <div class="td-summary-icon td-summary-icon--yellow"><i class="fa-solid fa-pen-to-square"></i></div>
+    <div>
+      <div class="td-summary-num">2</div>
+      <div class="td-summary-label">รอแก้ไข / ร่าง</div>
+      <div class="td-summary-sub">บทที่ 9, 10</div>
+    </div>
+  </div>
+</div>
+
+<!-- Toolbar -->
+<div class="td-filters">
+  <div class="td-search-box">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="ค้นหาบทเรียน...">
+  </div>
+  <select class="td-select"><option>สถานะทั้งหมด</option><option>เผยแพร่แล้ว</option><option>ร่าง</option></select>
+  <button class="td-btn td-btn--primary" style="margin-left:auto;"><i class="fa-solid fa-plus"></i> เพิ่มบทเรียนใหม่</button>
+</div>
+
+<!-- Lesson Grid -->
+<div class="td-lesson-grid">
+
+  <!-- บทที่ 1 -->
+  <div class="td-lesson-card">
+    <span class="td-pub-badge td-pub-badge--pub">เผยแพร่แล้ว</span>
+    <div class="td-lesson-card__num">1</div>
+    <div class="td-lesson-card__title">ความรู้เบื้องต้นเกี่ยวกับฐานข้อมูล</div>
+    <div class="td-lesson-card__desc">ความหมาย ความสำคัญ และองค์ประกอบของระบบฐานข้อมูล DBMS</div>
+    <div class="td-lesson-card__meta">
+      <span><i class="fa-solid fa-video"></i> 3 วิดีโอ</span>
+      <span><i class="fa-solid fa-file-lines"></i> 2 เอกสาร</span>
+      <span><i class="fa-solid fa-question-circle"></i> 10 ข้อสอบ</span>
+    </div>
+    <div class="td-lesson-prog-bar"><div class="td-lesson-prog-fill" style="width:95%"></div></div>
+    <div class="td-lesson-prog-text"><span>นักเรียนเสร็จสิ้น</span><span>95%</span></div>
+    <div class="td-lesson-card__actions">
+      <button class="td-btn td-btn--primary td-btn--sm"><i class="fa-solid fa-eye"></i> ดู</button>
+      <button class="td-btn td-btn--outline td-btn--sm"><i class="fa-solid fa-pen"></i> แก้ไข</button>
+      <button class="td-btn td-btn--sm" style="background:#f0f4fb;color:#555;"><i class="fa-solid fa-chart-bar"></i> สถิติ</button>
+    </div>
+  </div>
+
+  <!-- บทที่ 2 -->
+  <div class="td-lesson-card">
+    <span class="td-pub-badge td-pub-badge--pub">เผยแพร่แล้ว</span>
+    <div class="td-lesson-card__num">2</div>
+    <div class="td-lesson-card__title">การออกแบบตารางข้อมูล</div>
+    <div class="td-lesson-card__desc">ประเภทข้อมูล Primary Key Foreign Key Normalization (1NF, 2NF, 3NF)</div>
+    <div class="td-lesson-card__meta">
+      <span><i class="fa-solid fa-video"></i> 4 วิดีโอ</span>
+      <span><i class="fa-solid fa-file-lines"></i> 3 เอกสาร</span>
+      <span><i class="fa-solid fa-question-circle"></i> 10 ข้อสอบ</span>
+    </div>
+    <div class="td-lesson-prog-bar"><div class="td-lesson-prog-fill" style="width:88%"></div></div>
+    <div class="td-lesson-prog-text"><span>นักเรียนเสร็จสิ้น</span><span>88%</span></div>
+    <div class="td-lesson-card__actions">
+      <button class="td-btn td-btn--primary td-btn--sm"><i class="fa-solid fa-eye"></i> ดู</button>
+      <button class="td-btn td-btn--outline td-btn--sm"><i class="fa-solid fa-pen"></i> แก้ไข</button>
+      <button class="td-btn td-btn--sm" style="background:#f0f4fb;color:#555;"><i class="fa-solid fa-chart-bar"></i> สถิติ</button>
+    </div>
+  </div>
+
+  <!-- บทที่ 3 -->
+  <div class="td-lesson-card">
+    <span class="td-pub-badge td-pub-badge--pub">เผยแพร่แล้ว</span>
+    <div class="td-lesson-card__num">3</div>
+    <div class="td-lesson-card__title">ER Diagram และความสัมพันธ์</div>
+    <div class="td-lesson-card__desc">Entity Relationship Diagram ชนิดความสัมพันธ์ 1:1, 1:N, M:N</div>
+    <div class="td-lesson-card__meta">
+      <span><i class="fa-solid fa-video"></i> 3 วิดีโอ</span>
+      <span><i class="fa-solid fa-file-lines"></i> 2 เอกสาร</span>
+      <span><i class="fa-solid fa-question-circle"></i> 10 ข้อสอบ</span>
+    </div>
+    <div class="td-lesson-prog-bar"><div class="td-lesson-prog-fill" style="width:82%"></div></div>
+    <div class="td-lesson-prog-text"><span>นักเรียนเสร็จสิ้น</span><span>82%</span></div>
+    <div class="td-lesson-card__actions">
+      <button class="td-btn td-btn--primary td-btn--sm"><i class="fa-solid fa-eye"></i> ดู</button>
+      <button class="td-btn td-btn--outline td-btn--sm"><i class="fa-solid fa-pen"></i> แก้ไข</button>
+      <button class="td-btn td-btn--sm" style="background:#f0f4fb;color:#555;"><i class="fa-solid fa-chart-bar"></i> สถิติ</button>
+    </div>
+  </div>
+
+  <!-- บทที่ 4 -->
+  <div class="td-lesson-card">
+    <span class="td-pub-badge td-pub-badge--pub">เผยแพร่แล้ว</span>
+    <div class="td-lesson-card__num">4</div>
+    <div class="td-lesson-card__title">คำสั่ง SQL เบื้องต้น</div>
+    <div class="td-lesson-card__desc">DDL (CREATE, ALTER, DROP) และ DML (INSERT, UPDATE, DELETE)</div>
+    <div class="td-lesson-card__meta">
+      <span><i class="fa-solid fa-video"></i> 5 วิดีโอ</span>
+      <span><i class="fa-solid fa-file-lines"></i> 3 เอกสาร</span>
+      <span><i class="fa-solid fa-question-circle"></i> 15 ข้อสอบ</span>
+    </div>
+    <div class="td-lesson-prog-bar"><div class="td-lesson-prog-fill" style="width:78%"></div></div>
+    <div class="td-lesson-prog-text"><span>นักเรียนเสร็จสิ้น</span><span>78%</span></div>
+    <div class="td-lesson-card__actions">
+      <button class="td-btn td-btn--primary td-btn--sm"><i class="fa-solid fa-eye"></i> ดู</button>
+      <button class="td-btn td-btn--outline td-btn--sm"><i class="fa-solid fa-pen"></i> แก้ไข</button>
+      <button class="td-btn td-btn--sm" style="background:#f0f4fb;color:#555;"><i class="fa-solid fa-chart-bar"></i> สถิติ</button>
+    </div>
+  </div>
+
+  <!-- บทที่ 5 -->
+  <div class="td-lesson-card">
+    <span class="td-pub-badge td-pub-badge--pub">เผยแพร่แล้ว</span>
+    <div class="td-lesson-card__num">5</div>
+    <div class="td-lesson-card__title">SELECT และ WHERE</div>
+    <div class="td-lesson-card__desc">คำสั่ง SELECT, WHERE, LIKE, BETWEEN, IN, ORDER BY, LIMIT</div>
+    <div class="td-lesson-card__meta">
+      <span><i class="fa-solid fa-video"></i> 4 วิดีโอ</span>
+      <span><i class="fa-solid fa-file-lines"></i> 2 เอกสาร</span>
+      <span><i class="fa-solid fa-question-circle"></i> 15 ข้อสอบ</span>
+    </div>
+    <div class="td-lesson-prog-bar"><div class="td-lesson-prog-fill" style="width:71%"></div></div>
+    <div class="td-lesson-prog-text"><span>นักเรียนเสร็จสิ้น</span><span>71%</span></div>
+    <div class="td-lesson-card__actions">
+      <button class="td-btn td-btn--primary td-btn--sm"><i class="fa-solid fa-eye"></i> ดู</button>
+      <button class="td-btn td-btn--outline td-btn--sm"><i class="fa-solid fa-pen"></i> แก้ไข</button>
+      <button class="td-btn td-btn--sm" style="background:#f0f4fb;color:#555;"><i class="fa-solid fa-chart-bar"></i> สถิติ</button>
+    </div>
+  </div>
+
+  <!-- บทที่ 6 -->
+  <div class="td-lesson-card">
+    <span class="td-pub-badge td-pub-badge--pub">เผยแพร่แล้ว</span>
+    <div class="td-lesson-card__num">6</div>
+    <div class="td-lesson-card__title">JOIN และการเชื่อมตาราง</div>
+    <div class="td-lesson-card__desc">INNER JOIN, LEFT JOIN, RIGHT JOIN, FULL OUTER JOIN พร้อมตัวอย่าง</div>
+    <div class="td-lesson-card__meta">
+      <span><i class="fa-solid fa-video"></i> 4 วิดีโอ</span>
+      <span><i class="fa-solid fa-file-lines"></i> 2 เอกสาร</span>
+      <span><i class="fa-solid fa-question-circle"></i> 10 ข้อสอบ</span>
+    </div>
+    <div class="td-lesson-prog-bar"><div class="td-lesson-prog-fill" style="width:65%"></div></div>
+    <div class="td-lesson-prog-text"><span>นักเรียนเสร็จสิ้น</span><span>65%</span></div>
+    <div class="td-lesson-card__actions">
+      <button class="td-btn td-btn--primary td-btn--sm"><i class="fa-solid fa-eye"></i> ดู</button>
+      <button class="td-btn td-btn--outline td-btn--sm"><i class="fa-solid fa-pen"></i> แก้ไข</button>
+      <button class="td-btn td-btn--sm" style="background:#f0f4fb;color:#555;"><i class="fa-solid fa-chart-bar"></i> สถิติ</button>
+    </div>
+  </div>
+
+  <!-- บทที่ 7 -->
+  <div class="td-lesson-card">
+    <span class="td-pub-badge td-pub-badge--pub">เผยแพร่แล้ว</span>
+    <div class="td-lesson-card__num">7</div>
+    <div class="td-lesson-card__title">Function และ GROUP BY</div>
+    <div class="td-lesson-card__desc">Aggregate Functions: COUNT, SUM, AVG, MAX, MIN + GROUP BY + HAVING</div>
+    <div class="td-lesson-card__meta">
+      <span><i class="fa-solid fa-video"></i> 3 วิดีโอ</span>
+      <span><i class="fa-solid fa-file-lines"></i> 2 เอกสาร</span>
+      <span><i class="fa-solid fa-question-circle"></i> 10 ข้อสอบ</span>
+    </div>
+    <div class="td-lesson-prog-bar"><div class="td-lesson-prog-fill" style="width:58%"></div></div>
+    <div class="td-lesson-prog-text"><span>นักเรียนเสร็จสิ้น</span><span>58%</span></div>
+    <div class="td-lesson-card__actions">
+      <button class="td-btn td-btn--primary td-btn--sm"><i class="fa-solid fa-eye"></i> ดู</button>
+      <button class="td-btn td-btn--outline td-btn--sm"><i class="fa-solid fa-pen"></i> แก้ไข</button>
+      <button class="td-btn td-btn--sm" style="background:#f0f4fb;color:#555;"><i class="fa-solid fa-chart-bar"></i> สถิติ</button>
+    </div>
+  </div>
+
+  <!-- บทที่ 8 -->
+  <div class="td-lesson-card">
+    <span class="td-pub-badge td-pub-badge--pub">เผยแพร่แล้ว</span>
+    <div class="td-lesson-card__num">8</div>
+    <div class="td-lesson-card__title">การสร้างและจัดการตาราง</div>
+    <div class="td-lesson-card__desc">CREATE TABLE, ALTER TABLE, DROP TABLE, Constraints, Index</div>
+    <div class="td-lesson-card__meta">
+      <span><i class="fa-solid fa-video"></i> 3 วิดีโอ</span>
+      <span><i class="fa-solid fa-file-lines"></i> 2 เอกสาร</span>
+      <span><i class="fa-solid fa-question-circle"></i> 10 ข้อสอบ</span>
+    </div>
+    <div class="td-lesson-prog-bar"><div class="td-lesson-prog-fill" style="width:42%"></div></div>
+    <div class="td-lesson-prog-text"><span>นักเรียนเสร็จสิ้น</span><span>42%</span></div>
+    <div class="td-lesson-card__actions">
+      <button class="td-btn td-btn--primary td-btn--sm"><i class="fa-solid fa-eye"></i> ดู</button>
+      <button class="td-btn td-btn--outline td-btn--sm"><i class="fa-solid fa-pen"></i> แก้ไข</button>
+      <button class="td-btn td-btn--sm" style="background:#f0f4fb;color:#555;"><i class="fa-solid fa-chart-bar"></i> สถิติ</button>
+    </div>
+  </div>
+
+  <!-- บทที่ 9 (ร่าง) -->
+  <div class="td-lesson-card" style="opacity:.85;">
+    <span class="td-pub-badge td-pub-badge--draft">ร่าง</span>
+    <div class="td-lesson-card__num" style="background:linear-gradient(135deg,#aaa,#ccc);">9</div>
+    <div class="td-lesson-card__title">Transaction และ Index</div>
+    <div class="td-lesson-card__desc">BEGIN, COMMIT, ROLLBACK, ACID Properties, การสร้าง Index</div>
+    <div class="td-lesson-card__meta">
+      <span><i class="fa-solid fa-video"></i> 2 วิดีโอ</span>
+      <span><i class="fa-solid fa-file-lines"></i> 1 เอกสาร</span>
+      <span><i class="fa-solid fa-question-circle"></i> — ข้อสอบ</span>
+    </div>
+    <div class="td-lesson-prog-bar"><div class="td-lesson-prog-fill" style="width:0%;background:#ccc;"></div></div>
+    <div class="td-lesson-prog-text"><span>ยังไม่เผยแพร่</span><span>—</span></div>
+    <div class="td-lesson-card__actions">
+      <button class="td-btn td-btn--sm" style="background:#f0f4fb;color:#555;"><i class="fa-solid fa-eye"></i> ดูตัวอย่าง</button>
+      <button class="td-btn td-btn--primary td-btn--sm"><i class="fa-solid fa-pen"></i> แก้ไข</button>
+      <button class="td-btn td-btn--outline td-btn--sm"><i class="fa-solid fa-paper-plane"></i> เผยแพร่</button>
+    </div>
+  </div>
+
+  <!-- บทที่ 10 (ร่าง) -->
+  <div class="td-lesson-card" style="opacity:.85;">
+    <span class="td-pub-badge td-pub-badge--draft">ร่าง</span>
+    <div class="td-lesson-card__num" style="background:linear-gradient(135deg,#aaa,#ccc);">10</div>
+    <div class="td-lesson-card__title">ความปลอดภัยของฐานข้อมูล</div>
+    <div class="td-lesson-card__desc">GRANT, REVOKE, User Management, การสำรองข้อมูล (Backup/Restore)</div>
+    <div class="td-lesson-card__meta">
+      <span><i class="fa-solid fa-video"></i> 2 วิดีโอ</span>
+      <span><i class="fa-solid fa-file-lines"></i> 1 เอกสาร</span>
+      <span><i class="fa-solid fa-question-circle"></i> — ข้อสอบ</span>
+    </div>
+    <div class="td-lesson-prog-bar"><div class="td-lesson-prog-fill" style="width:0%;background:#ccc;"></div></div>
+    <div class="td-lesson-prog-text"><span>ยังไม่เผยแพร่</span><span>—</span></div>
+    <div class="td-lesson-card__actions">
+      <button class="td-btn td-btn--sm" style="background:#f0f4fb;color:#555;"><i class="fa-solid fa-eye"></i> ดูตัวอย่าง</button>
+      <button class="td-btn td-btn--primary td-btn--sm"><i class="fa-solid fa-pen"></i> แก้ไข</button>
+      <button class="td-btn td-btn--outline td-btn--sm"><i class="fa-solid fa-paper-plane"></i> เผยแพร่</button>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

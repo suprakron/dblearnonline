@@ -1,41 +1,35 @@
-{% extends 'dblearn/lesson_base.html' %}
+{% extends 'dblearn/exam_base.html' %}
 {% load static %}
 
-{% block title %}แบบทดสอบก่อนเรียน{% endblock %}
+{% block title %}แบบทดสอบก่อนเรียน – DBLearn{% endblock %}
+{% block exam_title %}แบบทดสอบก่อนเรียน{% endblock %}
+{% block exam_subtitle %}บทที่ 1–3 · 10 ข้อ · เวลา 10 นาที · วิชาโปรแกรมฐานข้อมูล{% endblock %}
+{% block timer_init %}10:00{% endblock %}
+{% block total_questions %}10{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/test.css' %}">
 <style>
-  .quiz-topbar h2 { color: #1a3d7a; }
-  .quiz-timer { background: linear-gradient(180deg,#e8f4e8 0%,#d4edda 100%); color: #1e6b35; }
-  .quiz-timer--warning { background: linear-gradient(180deg,#fff3cd 0%,#ffe69c 100%) !important; color: #856404 !important; }
-  .quiz-timer--danger  { background: linear-gradient(180deg,#f8d7da 0%,#f5c2c7 100%) !important; color: #842029 !important; animation: pulse .8s infinite; }
-  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
-  .quiz-submit-row { display: flex; justify-content: flex-end; margin-top: 18px; }
-  .quiz-btn--submit {
-    min-width: 180px; height: 58px; border: none; border-radius: 16px;
-    background: linear-gradient(180deg,#1a9e5c 0%,#158049 100%);
-    color: #fff; font-size: 18px; font-weight: 700; cursor: pointer;
-    box-shadow: 0 8px 18px rgba(21,128,73,.28);
-    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-    font-family: inherit;
-  }
-  .quiz-btn--submit:hover { transform: translateY(-2px); }
+  /* timer color states (override exam-base) */
+  .exam-timer--warning { color: #fbbf24 !important; }
+  .exam-timer--danger  { color: #f87171 !important; animation: tpulse .8s infinite; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="quiz-topbar">
-  <h2>แบบทดสอบก่อนเรียน : บทที่ 1–3</h2>
-  <div class="quiz-timer" id="quizTimer">10:00 นาที</div>
-</div>
 
+<!-- Question card -->
 <section class="quiz-question-card">
-  <h3>ข้อที่ <span id="currentQNum">1</span> : <span id="questionText"></span></h3>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+    <span style="font-size:12px;background:#dbeaff;color:#1a3d7a;padding:3px 10px;border-radius:20px;font-weight:700;">
+      ข้อที่ <span id="currentQNum">1</span> / 10
+    </span>
+    <span style="font-size:12px;color:#888;">แบบทดสอบก่อนเรียน</span>
+  </div>
+  <h3 id="questionText" style="font-size:17px;font-weight:700;color:#1a3d7a;line-height:1.5;margin-bottom:20px;"></h3>
 
   <div class="quiz-options-grid" id="optionsGrid"></div>
 
-  <div class="quiz-nav-row">
+  <div class="quiz-nav-row" style="margin-top:24px;">
     <button class="quiz-btn quiz-btn--prev" id="prevBtn" onclick="changeQuestion(-1)">
       <i class="fa-solid fa-chevron-left"></i> ก่อนหน้า
     </button>
@@ -45,32 +39,30 @@
     </button>
   </div>
 
-  <div class="quiz-submit-row" id="submitRow" style="display:none;">
-    <button class="quiz-btn--submit" onclick="submitQuiz()">
+  <div id="submitRow" style="display:none;justify-content:flex-end;margin-top:18px;">
+    <button onclick="submitQuiz()" style="min-width:200px;height:56px;border:none;border-radius:16px;background:linear-gradient(180deg,#1a9e5c,#158049);color:#fff;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 8px 18px rgba(21,128,73,.25);">
       <i class="fa-solid fa-paper-plane"></i> ส่งคำตอบ
     </button>
   </div>
 </section>
 
-<section class="quiz-number-panel">
-  <div class="quiz-number-grid" id="numberGrid"></div>
-</section>
-
 <!-- Result Modal -->
-<div id="resultModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:500; align-items:center; justify-content:center;">
-  <div style="background:#fff; border-radius:28px; padding:48px 56px; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.2); max-width:480px; width:90%;">
-    <div style="font-size:64px; margin-bottom:16px;">🎉</div>
-    <h2 style="font-size:32px; font-weight:800; color:#1a3d7a; margin-bottom:8px;">ส่งคำตอบสำเร็จ!</h2>
-    <p style="font-size:20px; color:#444; margin-bottom:24px;">คะแนนของคุณ</p>
-    <div style="font-size:72px; font-weight:800; color:#1a9e5c; line-height:1;" id="modalScore">0</div>
-    <div style="font-size:22px; color:#666; margin-bottom:8px;" id="modalTotal">จาก 10 ข้อ</div>
-    <div style="font-size:18px; color:#888; margin-bottom:32px;" id="modalPct"></div>
-    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
-      <a href="{% url 'results' %}" style="min-width:160px; height:52px; border-radius:14px; background:linear-gradient(180deg,#234a9d 0%,#1d418f 100%); color:#fff; font-size:18px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none;">
-        <i class="fa-solid fa-chart-bar"></i> ดูผลการเรียน
+<div id="resultModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:28px;padding:44px 52px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.22);max-width:460px;width:90%;">
+    <div id="resultEmoji" style="font-size:60px;margin-bottom:14px;">🎉</div>
+    <h2 style="font-size:28px;font-weight:800;color:#1a3d7a;margin-bottom:6px;">ส่งคำตอบสำเร็จ!</h2>
+    <p style="font-size:15px;color:#555;margin-bottom:6px;">สมชาย จิตรภักดิ์ &nbsp;|&nbsp; รหัส 6401001</p>
+    <p style="font-size:14px;color:#888;margin-bottom:22px;">แบบทดสอบก่อนเรียน · บทที่ 1–3</p>
+    <div id="modalScore" style="font-size:72px;font-weight:800;color:#1a9e5c;line-height:1;">0</div>
+    <div style="font-size:20px;color:#666;margin-bottom:6px;">จาก 10 ข้อ</div>
+    <div id="modalPct" style="font-size:18px;color:#888;margin-bottom:28px;"></div>
+    <div id="resultMsg" style="font-size:14px;padding:10px 16px;border-radius:10px;margin-bottom:24px;"></div>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+      <a href="{% url 'lesson_detail' %}" style="min-width:150px;height:50px;border-radius:14px;background:linear-gradient(180deg,#6a35c2,#5b21b6);color:#fff;font-size:16px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;">
+        <i class="fa-solid fa-book-open"></i> เริ่มเรียน
       </a>
-      <a href="{% url 'posttest' %}" style="min-width:160px; height:52px; border-radius:14px; background:linear-gradient(180deg,#1a9e5c 0%,#158049 100%); color:#fff; font-size:18px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none;">
-        <i class="fa-solid fa-file-circle-check"></i> ทำแบบทดสอบหลังเรียน
+      <a href="{% url 'results' %}" style="min-width:150px;height:50px;border-radius:14px;background:linear-gradient(180deg,#234a9d,#1d418f);color:#fff;font-size:16px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;">
+        <i class="fa-solid fa-chart-bar"></i> ดูผลการเรียน
       </a>
     </div>
   </div>
@@ -95,8 +87,11 @@ const answers = new Array(questions.length).fill(null)
 
 function buildNumberGrid() {
   const grid = document.getElementById('numberGrid')
+  if (!grid) return
   grid.innerHTML = ''
+  let answered = 0
   questions.forEach((_, i) => {
+    if (answers[i]) answered++
     const btn = document.createElement('button')
     btn.className = 'quiz-number' +
       (answers[i] ? ' quiz-number--done' : '') +
@@ -105,6 +100,10 @@ function buildNumberGrid() {
     btn.onclick = () => goTo(i)
     grid.appendChild(btn)
   })
+  const countEl = document.getElementById('answeredCount')
+  const fillEl  = document.getElementById('progressFill')
+  if (countEl) countEl.textContent = answered
+  if (fillEl)  fillEl.style.width = (answered / questions.length * 100) + '%'
 }
 
 function renderQuestion() {
@@ -112,7 +111,6 @@ function renderQuestion() {
   document.getElementById('currentQNum').textContent = current + 1
   document.getElementById('progressCurrent').textContent = current + 1
   document.getElementById('questionText').textContent = q.q
-
   const grid = document.getElementById('optionsGrid')
   grid.innerHTML = ''
   q.opts.forEach((opt, i) => {
@@ -131,7 +129,6 @@ function renderQuestion() {
     })
     grid.appendChild(label)
   })
-
   document.getElementById('prevBtn').disabled = current === 0
   const isLast = current === questions.length - 1
   document.getElementById('nextBtn').style.display = isLast ? 'none' : ''
@@ -147,10 +144,22 @@ function submitQuiz() {
   const score = answers.filter((a, i) => a === questions[i].ans).length
   const pct = Math.round(score / questions.length * 100)
   document.getElementById('modalScore').textContent = score
-  document.getElementById('modalTotal').textContent = 'จาก ' + questions.length + ' ข้อ'
   document.getElementById('modalPct').textContent = pct + '%'
-  const modal = document.getElementById('resultModal')
-  modal.style.display = 'flex'
+  const msg = document.getElementById('resultMsg')
+  if (pct >= 80) {
+    document.getElementById('resultEmoji').textContent = '🏆'
+    msg.style.background = '#d4edda'; msg.style.color = '#155724'
+    msg.textContent = 'ยอดเยี่ยม! คุณมีความรู้พื้นฐานด้านฐานข้อมูลดีมาก'
+  } else if (pct >= 60) {
+    document.getElementById('resultEmoji').textContent = '👍'
+    msg.style.background = '#fff3cd'; msg.style.color = '#856404'
+    msg.textContent = 'ดีทีเดียว! ศึกษาเนื้อหาเพิ่มเติมเพื่อเตรียมพร้อมเรียน'
+  } else {
+    document.getElementById('resultEmoji').textContent = '📚'
+    msg.style.background = '#f8d7da'; msg.style.color = '#721c24'
+    msg.textContent = 'ควรทบทวนเนื้อหาก่อนเรียนเพื่อช่วยให้เข้าใจบทเรียนได้ดีขึ้น'
+  }
+  document.getElementById('resultModal').style.display = 'flex'
 }
 
 /* ── Timer ── */
@@ -161,18 +170,13 @@ const timerInterval = setInterval(() => {
   timeLeft--
   const m = String(Math.floor(timeLeft / 60)).padStart(2, '0')
   const s = String(timeLeft % 60).padStart(2, '0')
-  timerEl.textContent = m + ':' + s + ' นาที'
+  timerEl.textContent = m + ':' + s
 
-  if (timeLeft <= 60) {
-    timerEl.className = 'quiz-timer quiz-timer--danger'
-  } else if (timeLeft <= 3 * 60) {
-    timerEl.className = 'quiz-timer quiz-timer--warning'
-  }
+  if (timeLeft <= 60)       { timerEl.className = 'exam-timer--danger' }
+  else if (timeLeft <= 180) { timerEl.className = 'exam-timer--warning' }
+  else                      { timerEl.className = '' }
 
-  if (timeLeft <= 0) {
-    clearInterval(timerInterval)
-    submitQuiz()
-  }
+  if (timeLeft <= 0) { clearInterval(timerInterval); submitQuiz() }
 }, 1000)
 
 renderQuestion()
